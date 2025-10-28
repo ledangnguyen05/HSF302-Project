@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Category Management</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<form th:action="@{/categories/searchByName}" method="post">
+    <input type="text" name="categoryName" placeholder="Enter category name to search" th:value="${param.categoryName!=null?param.categoryName:''}" required>
+    <input type="submit" value="Search">
+</form>
+<a th:href="@{/categories/createPage}"><button>Add New Category</button></a>
+<p th:if="${message}" th:text="${message}"></p>
+<p th:if="${error}" th:text="${error}"></p>
+<h1>Category List</h1>
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Category Name</th>
+        <th>Description</th>
+        <th>Action</th>
+    </tr>
+    <tr th:each="category :${categoryList}">
+        <td th:text="${category.id}"></td>
+        <td th:text="${category.categoryName}"></td>
+        <td th:text="${category.description}"></td>
+        <td><a th:href="@{/categories/deleteCategory/{id}(id=${category.id})}" onclick="return confirm('Are you sure to delete?')"><button>Delete</button></a>
+            <a th:href="@{/categories/updatePage/{id}(id=${category.id})}"><button>Update</button></a></td>
+    </tr>
+</table>
+<div th:if="${session.user.id==1}">
+    <a th:href="@{/user/adminHome}"><button>Back To Home</button></a>
+</div>
+<div th:if="${session.user.id==2}">
+    <a th:href="@{/user/staffHome}"><button>Back To Home</button></a>
+</div>
+<div th:if="${session.user.id==3}">
+    <a th:href="@{/user/customerHome}"><button>Back To Home</button></a>
+</div>
+</body>
+</html>

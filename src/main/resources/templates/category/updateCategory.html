@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Category Page</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <style>
+        .update-container label {
+            color: black;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<div class="update-container">
+    <h2>Update Flower Category</h2>
+    <form th:action="@{/categories/updateExecute}" th:object="${category}" method="post">
+
+        <label for="id">Category ID:</label>
+        <input type="text" id="id" th:field="*{id}" readonly>
+
+        <label for="categoryName">Category Name:</label>
+        <input type="text" id="categoryName" th:field="*{categoryName}" placeholder="Enter category name">
+        <div class="error" th:if="${#fields.hasErrors('categoryName')}" th:errors="*{categoryName}"></div>
+
+        <label for="description">Description:</label>
+        <input type="text" id="description" th:field="*{description}" placeholder="Enter description">
+        <div class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+
+        <button type="submit">Update</button>
+    </form>
+    <a th:href="@{/catgories/listCategory}"><button>🔙 Back</button></a>
+    <p class="error" th:if="${error}" th:text="${error}"></p>
+</div>
+</body>
+</html>

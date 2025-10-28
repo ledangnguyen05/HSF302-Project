@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ Khách Hàng - Hoa Xanh Garden</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+
+<header>
+    <h1 style="color:white">🌿 Hoa Xanh Garden - Chào mừng bạn, <span th:text="${session.user.fullName}">Nguyễn Văn A</span> 🌿</h1>
+</header>
+
+<nav>
+        <div><a th:href="@{/home}">Trang chủ</a></div>
+        <div><a th:href="@{/products}">Sản phẩm</a></div>
+        <div><a th:href="@{/promotions}">Khuyến mãi</a></div>
+        <div><a th:href="@{/orders}">Đơn hàng của tôi</a></div>
+        <div><a th:href="@{/cart}">Giỏ hàng</a></div>
+        <div><a th:href="@{/users/updatePage/{id}(id=${session.user.id})}">Hồ sơ cá nhân</a></div>
+        <div><a th:href="@{/logout}">Đăng xuất</a></div>
+</nav>
+
+
+<section class="hero">
+    <h2>Hoa tươi cho mọi khoảnh khắc yêu thương 💐</h2>
+</section>
+
+<section class="products">
+<!--    <div class="product-card" th:each="product : ${productList}">-->
+<!--        <img th:src="@{${product.imageUrl}}" alt="Hoa">-->
+<!--        <h3 th:text="${product.name}">Hoa Hồng Đỏ</h3>-->
+<!--        <p th:text="${product.price + ' VNĐ'}">300,000 VNĐ</p>-->
+<!--        <button th:onclick="'window.location.href=\'/product/' + ${product.id} + '\';'">-->
+<!--            Xem chi tiết-->
+<!--        </button>-->
+<!--        <button th:onclick="'window.location.href=\'/cart/add/' + ${product.id} + '\';'">-->
+<!--            Thêm vào giỏ-->
+<!--        </button>-->
+<!--    </div>-->
+</section>
+
+<footer>
+    <p>© 2025 Hoa Xanh Garden | Địa chỉ: 123 Hoa Hồng, TP.HCM | Điện thoại: 0909 123 456</p>
+</footer>
+
+</body>
+</html>

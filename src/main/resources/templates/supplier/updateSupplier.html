@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Supplier Page</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <style>
+        .update-container label {
+            color: black;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<div class="update-container">
+    <h2>Update Supplier</h2>
+    <form th:action="@{/suppliers/updateExecute}" method="post" th:object="${supplier}">
+        <label for="id">Supplier Name:</label>
+        <input type="text" id="id" th:field="*{id}" readonly>
+
+        <label for="supplierName">Supplier Name:</label>
+        <input type="text"  id="supplierName" th:field="*{supplierName}" placeholder="Enter supplier name">
+        <div class="error" th:if="${#fields.hasErrors('supplierName')}" th:errors="*{supplierName}"></div>
+
+        <label for="contactName">Contact Name:</label>
+        <input type="text" id="contactName" th:field="*{contactName}" placeholder="Enter contact name">
+        <div class="error" th:if="${#fields.hasErrors('contactName')}" th:errors="*{contactName}"></div>
+
+        <label for="phone">Phone:</label>
+        <input type="text" id="phone" th:field="*{phone}" placeholder="Enter phone">
+        <div class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+
+        <label for="address">Address:</label>
+        <input type="text" id="address" th:field="*{address}" placeholder="Enter address">
+        <div class="error" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+
+        <button type="submit">Update</button>
+    </form>
+    <a th:href="@{/suppliers/listSuppliers}"><button>🔙 Back To Home</button></a>
+    <p  class="error" th:if="${error}" th:text="${error}"></p>
+</div>
+</body>
+</html>

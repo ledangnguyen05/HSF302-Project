@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User Management</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<form th:action="@{/users/search}" method="post">
+    <select name="searchType">
+        <option value="byUserName" th:selected="${searchType=='byUserName'}">Search by User Name</option>
+        <option value="byMail" th:selected="${searchType=='byMail'}">Search by Email</option>
+        <option value="byPhone" th:selected="${searchType=='byPhone'}">Search by Phone</option>
+        <option th:if="${session.user.role.id==1}" value="byRoleName"
+                th:selected="${searchType=='byRoleName'}">
+            Search by Role Name
+        </option>
+    </select>
+    <input type="text" name="keyword" placeholder="Enter what you want to search"
+           th:value="${param.keyword!=null?param.keyword:''}" required>
+    <button type="submit">Search</button>
+</form>
+<p class="error" th:if="${error}" th:text="${error}"></p>
+<p class="message" th:if="${message}" th:text="${message}"></p>
+<h1>User List</h1>
+<table border="1" th:if="${session.user.role.id==1}">
+    <tr>
+        <th>ID</th>
+        <th>User Name</th>
+        <th>Password</th>
+        <th>Full Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Address</th>
+        <th>Is Active</th>
+        <th>Created At</th>
+        <th>Updated At</th>
+        <th>Role</th>
+        <th>Action</th>
+    </tr>
+    <tr th:each="user : ${users}">
+        <td th:text="${user.id}"></td>
+        <td th:text="${user.username}"></td>
+        <td th:text="${user.password}"></td>
+        <td th:text="${user.fullName}"></td>
+        <td th:text="${user.email}"></td>
+        <td th:text="${user.phone}"></td>
+        <td th:text="${user.address}"></td>
+        <td th:text="${user.isActive}"></td>
+        <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+        <td th:text="${#temporals.format(user.updatedAt, 'yyyy-MM-dd HH:mm')}"></td>
+        <td th:text="${user.role.roleName}"></td>
+        <td><a th:href="@{/users/deleteUser/{id}(id=${user.id})}"
+               onclick="return confirm('Are you sure to delete?')">
+            <button>Delete</button>
+        </a>
+            <a th:href="@{/users/updatePage/{id}(id=${user.id})}">
+                <button>Update</button>
+            </a></td>
+    </tr>
+</table>
+
+<table border="1" th:if="${session.user.role.id==2}">
+    <tr>
+        <th>ID</th>
+        <th>User Name</th>
+        <th>Password</th>
+        <th>Full Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Address</th>
+        <th>Is Active</th>
+        <th>Created At</th>
+        <th>Updated At</th>
+    </tr>
+<!--    staff just see customer list -->
+    <tr th:each="user : ${users}" th:if="${user.role.id==3}">
+        <td th:text="${user.id}"></td>
+        <td th:text="${user.username}"></td>
+        <td th:text="${user.password}"></td>
+        <td th:text="${user.fullName}"></td>
+        <td th:text="${user.email}"></td>
+        <td th:text="${user.phone}"></td>
+        <td th:text="${user.address}"></td>
+        <td th:text="${user.isActive}"></td>
+        <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+        <td th:text="${#temporals.format(user.updatedAt, 'yyyy-MM-dd HH:mm')}"></td>
+    </tr>
+</table>
+
+<a th:href="@{/home}">
+    <button>🔙 Back To Home</button>
+</a>
+
+</body>
+</html>
