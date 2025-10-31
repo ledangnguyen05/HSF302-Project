@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Category Page</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <style>
+        .register-container label {
+            color: black;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<div class="register-container">
+    <h2>Add New Flower Category</h2>
+    <form th:action="@{/categories/createExecute}" th:object="${category}" method="post">
+
+        <label for="categoryName">Category Name:</label>
+        <input type="text" id="categoryName" th:field="*{categoryName}" placeholder="Enter category name">
+        <div class="error" th:if="${#fields.hasErrors('categoryName')}" th:errors="*{categoryName}"></div>
+
+        <label for="description">Description:</label>
+        <input type="text" id="description" th:field="*{description}" placeholder="Enter description">
+        <div class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+
+        <button type="submit">Add</button>
+    </form>
+    <a th:href="@{/categories/listCategory}"><button>🔙 Back To Category List</button></a>
+    <p class="error" th:if="${error}" th:text="${error}"></p>
+</div>
+</body>
+</html>

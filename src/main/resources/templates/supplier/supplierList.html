@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Supplier Management</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<form th:action="@{/suppliers/search}" method="post">
+    <select name="searchType">
+        <option value="bySupplierName" th:selected="${searchType=='bySupplierName'}">Search by Supplier Name</option>
+        <option value="byContactName" th:selected="${searchType=='byContactName'}">Search by Contact Name</option>
+        <option value="byPhone" th:selected="${searchType=='byPhone'}">Search by Phone</option>
+    </select>
+    <input type="text" name="keyword" th:value="${param.keyword!=null?param.keyword:''}"
+           placeholder="Enter what you want to search" required>
+    <input type="submit" value="Search">
+</form>
+<a th:href="@{/suppliers/addPage}"><button>Add new supplier</button></a><br>
+<p class="error" th:if="${error}" th:text="${error}"></p>
+<p class="message" th:if="${message}" th:text="${message}"></p>
+<h1>Supplier List</h1>
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Supplier Name</th>
+        <th>Contact Name</th>
+        <th>Phone</th>
+        <th>Address</th>
+        <th>Action</th>
+    </tr>
+    <tr th:each="supplier : ${suppliers}">
+        <td th:text="${supplier.id}"></td>
+        <td th:text="${supplier.supplierName}"></td>
+        <td th:text="${supplier.contactName}"></td>
+        <td th:text="${supplier.phone}"></td>
+        <td th:text="${supplier.address}"></td>
+        <td><a th:href="@{/suppliers/deleteSupplier/{id}(id=${supplier.id})}"
+               onclick="return confirm('Are you sure to delete?')"><button>Delete</button></a>
+            <a th:href="@{/suppliers/updatePage/{id}(id=${supplier.id})}"><button>Update</button></a></td>
+    </tr>
+</table>
+<a th:href="@{/home}"><button>🔙 Back To Home</button></a>
+</body>
+</html>

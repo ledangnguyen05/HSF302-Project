@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background-color: #f8fdf8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        form {
+            background-color: #ffffff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 320px;
+            text-align: center;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 16px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #2e7d32;
+            display: block;
+            text-align: left;
+        }
+
+        button {
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #1b5e20;
+        }
+
+        p {
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Register button */
+        a button {
+            background-color: #388e3c;
+        }
+
+        a button:hover {
+            background-color: #1b5e20;
+        }
+
+    </style>
+</head>
+<body>
+<form th:action="@{/login}" method="post">
+    <p th:if="${message}" th:text="${message}" style="color:green"></p>
+
+    <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required/>
+    </div>
+
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required/>
+    </div>
+
+    <p th:if="${error}" th:text="${error}" style="color:red"></p>
+
+    <button type="submit">Login</button>
+
+    <a th:href="@{/users/registerPage}">
+        <button type="button">Register</button>
+    </a>
+</form>
+</body>
+</html>
