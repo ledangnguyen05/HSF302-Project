@@ -1,34 +1,51 @@
 package hsf302.hsf302project.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.math.BigDecimal;
 
 @Data
 @Entity
-@Table(name = "IMPORT_DETAIL")
+@Table(name = "IMPORT_DETAILS")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ImportDetailEntity {
 
-    @EmbeddedId
-    private ImportDetailKey id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ImportDetailID")
+    private int id;
 
-    @ManyToOne
-    @MapsId("receiptID")
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ReceiptID", nullable = false)
     private ImportReceiptEntity receipt;
 
-    @ManyToOne
-    @MapsId("productId")
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ProductID", nullable = false)
     private ProductEntity product;
 
-
+    @NotNull
     @Column(name = "Quantity", nullable = false)
     private int quantity;
 
-    @Column(name = "UnitCost", nullable = false)
+    @DecimalMin(value = "0.00", message = "Unit cost must be positive")
+    @Column(name = "UnitCost", precision = 10, scale = 2, nullable = false)
     private BigDecimal unitCost;
+
+    @DecimalMin(value = "0.00", message = "Subtotal must be positive")
+    @Column(name = "SubTotal", precision = 12, scale = 2, nullable = false)
+    private BigDecimal subTotal = BigDecimal.ZERO;
+
+    @PrePersist
+    @PreUpdate
+    public void calculateSubTotal() {
+        if (unitCost != null && quantity > 0) {
+            this.subTotal = unitCost.multiply(BigDecimal.valueOf(quantity));
+        } else {
+            this.subTotal = BigDecimal.ZERO;
+        }
+    }
 }

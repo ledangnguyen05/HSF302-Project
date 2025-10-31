@@ -44,7 +44,7 @@ public class OrderController {
 
     @PostMapping("addExecute")
     @Transactional
-    public String createOrder(@Valid @ModelAttribute("orders") OrderEntity order,
+    public String createOrder(@Valid @ModelAttribute("order") OrderEntity order,
                               Model model,
                               RedirectAttributes redirectAttributes,
                               BindingResult result) {
