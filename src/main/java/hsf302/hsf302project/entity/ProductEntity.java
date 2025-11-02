@@ -17,7 +17,7 @@ public class ProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ProductID")
-    private int id;
+    private Integer id;
 
     @NotNull(message = "Product name cannot be blank")
     @Size(max=50,message = "Product name must not exceed 50 characters")
@@ -35,16 +35,21 @@ public class ProductEntity {
 
     @ManyToOne
     @JoinColumn(name = "CategoryID", nullable = false)
+    @ToString.Exclude
     private CategoryEntity category;
 
     @ManyToOne
     @JoinColumn(name = "SupplierID", nullable = false)
+    @ToString.Exclude
     private SupplierEntity supplier;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<OrderDetailEntity> orderDetails = new ArrayList<>();
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<ImportDetailEntity> importDetails = new ArrayList<>();
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    private List<CartEntity> carts;
+
 
 }
