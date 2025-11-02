@@ -2,8 +2,10 @@ package hsf302.hsf302project.controller;
 
 import hsf302.hsf302project.entity.OrderDetailEntity;
 import hsf302.hsf302project.entity.OrderEntity;
+import hsf302.hsf302project.entity.UserEntity;
 import hsf302.hsf302project.repository.OrderDetailRepository;
 import hsf302.hsf302project.repository.ProductRepository;
+import hsf302.hsf302project.repository.UserRepository;
 import hsf302.hsf302project.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -28,6 +31,9 @@ public class OrderController {
 
     @Autowired
     ProductRepository productRepository;
+
+    @Autowired
+    UserRepository userRepository;
     @GetMapping("/listOrders")
     public String getAllOrders(Model model) {
         model.addAttribute("orders",orderService.findAll());
@@ -36,8 +42,10 @@ public class OrderController {
 
     @GetMapping("/addPage")
     public String addPage(Model model){
-        model.addAttribute("order", new OrderEntity());
-        model.addAttribute("orderDetail", new OrderDetailEntity());
+        OrderEntity order = new OrderEntity();
+        order.getOrderDetails().add(new OrderDetailEntity());
+
+        model.addAttribute("order", order);
         model.addAttribute("products",productRepository.findAll());
         return "order/addOrder";
     }
@@ -52,6 +60,16 @@ public class OrderController {
             model.addAttribute("order",order);
             return "order/addOrder";
         }
+        Integer customerId = order.getCustomer() != null ? order.getCustomer().getId() : null;
+
+        if(customerId == null) {
+            throw new IllegalArgumentException("Customer ID is required");
+        }
+
+        UserEntity customer = userRepository.findById(customerId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Customer ID"));
+
+        order.setCustomer(customer);
         boolean isAdded= orderService.create(order);
         if(isAdded){
             redirectAttributes.addFlashAttribute("message","Order added successfully");
@@ -73,29 +91,4 @@ public class OrderController {
         return "redirect:/orders/listOrders";
     }
 
-    @GetMapping("updatePage/{id}")
-    public String updatePage(@PathVariable int id, Model model){
-        model.addAttribute("order",orderService.findById(id));
-        model.addAttribute("products",productRepository.findAll());
-        return "order/updateOrder";
-    }
-
-    @PostMapping("/updateExecute")
-    public String update(@Valid @ModelAttribute("order") OrderEntity orderEntity,
-                         BindingResult result,
-                         Model model,
-                         RedirectAttributes redirectAttributes){
-        if(result.hasErrors()){
-            model.addAttribute("order",orderEntity);
-            return "order/addOrder";
-        }
-        boolean isAdded= orderService.update(orderEntity.getOrderID(),orderEntity);
-        if(isAdded){
-            redirectAttributes.addFlashAttribute("message","Order updated successfully");
-            return "redirect:/orders/listOrders";
-        }else{
-            model.addAttribute("error","Failed to update order");
-            return "order/updateOrder";
-        }
-    }
 }

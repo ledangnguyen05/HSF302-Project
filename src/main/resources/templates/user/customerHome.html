@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang Chủ Khách Hàng - Hoa Xanh Garden</title>
+    <title>Customer Home</title>
     <link rel="stylesheet" th:href="@{/style.css}">
 </head>
 <body>
@@ -15,9 +15,8 @@
 <nav>
         <div><a th:href="@{/home}">Trang chủ</a></div>
         <div><a th:href="@{/products}">Sản phẩm</a></div>
-        <div><a th:href="@{/promotions}">Khuyến mãi</a></div>
-        <div><a th:href="@{/orders}">Đơn hàng của tôi</a></div>
-        <div><a th:href="@{/cart}">Giỏ hàng</a></div>
+        <div><a th:href="@{/orders/listOrders}">Đơn hàng của tôi</a></div>
+        <div><a th:href="@{/carts/listCarts}">Giỏ hàng</a></div>
         <div><a th:href="@{/users/updatePage/{id}(id=${session.user.id})}">Hồ sơ cá nhân</a></div>
         <div><a th:href="@{/logout}">Đăng xuất</a></div>
 </nav>

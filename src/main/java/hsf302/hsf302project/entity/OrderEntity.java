@@ -21,17 +21,22 @@ public class OrderEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "OrderID")
     private int orderID;
+
     @ManyToOne
     @JoinColumn(name = "CustomerID", nullable = false)
     private UserEntity customer;
+
     @ManyToOne
     @JoinColumn(name = "EmployeeID")
     private UserEntity employee;
+
     @Column(name = "OrderDate", nullable = false)
     private LocalDateTime orderDate = LocalDateTime.now();
+
     @DecimalMin(value = "0.00", message = "Total amount must be positive")
     @Column(name = "TotalAmount", precision = 10, scale = 2, nullable = false)
     private BigDecimal totalAmount = BigDecimal.ZERO;
+
     @Column(name = "Status", nullable = false)
     private Status status = Status.PENDING;
 
@@ -48,8 +53,13 @@ public class OrderEntity {
     }
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<OrderDetailEntity> orderDetails = new ArrayList<>();
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<PaymentEntity> payments = new ArrayList<>();
 
     public void addOrderDetail(OrderDetailEntity detail) {
