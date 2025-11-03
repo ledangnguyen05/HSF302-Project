@@ -28,16 +28,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean updateUser(int userId, UserEntity user) {
-        try{
-            if(userRepository.existsById(userId)) {
-                user.setId(userId);
-                userRepository.save(user);
-                return true;
-            }
-            return false;
-        }catch(Exception e){
-            return false;
+        UserEntity existingUser = userRepository.findById(userId).orElse(null);
+        if(existingUser != null){
+            existingUser.setUsername(user.getUsername());
+            existingUser.setPassword(user.getPassword());
+            existingUser.setFullName(user.getFullName());
+            existingUser.setEmail(user.getEmail());
+            existingUser.setPhone(user.getPhone());
+            existingUser.setAddress(user.getAddress());
+            existingUser.setActive(user.getActive());
+            existingUser.setRole(user.getRole());
+            userRepository.save(existingUser);
+            return true;
         }
+        return false;
     }
 
     @Override

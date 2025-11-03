@@ -50,7 +50,7 @@ public class UserEntity {
 
     @Column(name = "IsActive", nullable = false)
     @Builder.Default
-    private boolean isActive = true;
+    private Boolean active = true;
 
     @Column(name = "CreatedAt", nullable = false)
     @Builder.Default

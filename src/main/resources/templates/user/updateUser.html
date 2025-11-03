@@ -157,10 +157,20 @@
         <input type="text" id="address" th:field="*{address}" class="form-input" placeholder="Nhập địa chỉ">
         <div class="error" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
 
+        <label for="status" class="form-label">Trạng thái:</label>
+        <select id="status" th:field="*{active}" class="form-select" required>
+            <option th:value="true">Hoạt động</option>
+            <option th:value="false">Vô hiệu hóa</option>
+        </select>
+
         <label for="role" class="form-label">Vai trò:</label>
         <select id="role" th:field="*{role}" class="form-select" required>
-            <option value="" disabled selected>-- Chọn vai trò --</option>
-            <option th:each="role : ${roleList}" th:value="${role.id}" th:text="${role.roleName}"></option>
+            <option value="" disabled>-- Chọn vai trò --</option>
+            <option th:each="r : ${roleList}"
+                    th:value="${r.id}"
+                    th:text="${r.roleName}"
+                    th:selected="${user.role != null and r.id == user.role.id}">
+            </option>
         </select>
         <div class="error" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></div>
 
