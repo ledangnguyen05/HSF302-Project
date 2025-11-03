@@ -3,39 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Category Page</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <title>Update Category Page - Hoa Xanh Garden</title>
     <style>
-        .update-container label {
-            color: black;
+        body#update-category-page {
+            font-family: Arial, sans-serif;
+            background-color: #f0fff0; /* pale green background */
+            color: #006400; /* dark green text */
+            margin: 20px;
         }
 
-        .error {
+        .update-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #228B22;
+            border-radius: 10px;
+            background-color: #ffffff;
+        }
+
+        h2#update-category-title {
+            text-align: center;
+            color: #228B22; /* forest green */
+            margin-bottom: 20px;
+        }
+
+        form#update-category-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label.form-label {
+            margin-top: 10px;
+            color: #006400;
+        }
+
+        input.form-input {
+            padding: 8px;
+            border: 1px solid #228B22;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        button.btn {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #228B22;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button.btn:hover {
+            background-color: #006400;
+        }
+
+        .error-message {
             color: red;
+            margin-top: 5px;
+        }
+
+        .back-container {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        a.back-link {
+            text-decoration: none;
         }
     </style>
 </head>
-<body>
+<body id="update-category-page">
 
 <div class="update-container">
-    <h2>Update Flower Category</h2>
-    <form th:action="@{/categories/updateExecute}" th:object="${category}" method="post">
+    <h2 id="update-category-title">Update Flower Category</h2>
+    <form id="update-category-form" th:action="@{/categories/updateExecute}" th:object="${category}" method="post">
 
-        <label for="id">Category ID:</label>
-        <input type="text" id="id" th:field="*{id}" readonly>
+        <label for="id" class="form-label">Category ID:</label>
+        <input type="text" id="id" th:field="*{id}" class="form-input" readonly>
 
-        <label for="categoryName">Category Name:</label>
-        <input type="text" id="categoryName" th:field="*{categoryName}" placeholder="Enter category name">
-        <div class="error" th:if="${#fields.hasErrors('categoryName')}" th:errors="*{categoryName}"></div>
+        <label for="categoryName" class="form-label">Category Name:</label>
+        <input type="text" id="categoryName" th:field="*{categoryName}" class="form-input" placeholder="Enter category name">
+        <div class="error-message" th:if="${#fields.hasErrors('categoryName')}" th:errors="*{categoryName}"></div>
 
-        <label for="description">Description:</label>
-        <input type="text" id="description" th:field="*{description}" placeholder="Enter description">
-        <div class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+        <label for="description" class="form-label">Description:</label>
+        <input type="text" id="description" th:field="*{description}" class="form-input" placeholder="Enter description">
+        <div class="error-message" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
 
-        <button type="submit">Update</button>
+        <button type="submit" class="btn">Update</button>
     </form>
-    <a th:href="@{/catgories/listCategory}"><button>🔙 Back</button></a>
-    <p class="error" th:if="${error}" th:text="${error}"></p>
+
+    <div class="back-container">
+        <a th:href="@{/categories/listCategory}" class="back-link">
+            <button class="btn">🔙 Back</button>
+        </a>
+    </div>
+
+    <p class="error-message" th:if="${error}" th:text="${error}"></p>
 </div>
+
 </body>
 </html>

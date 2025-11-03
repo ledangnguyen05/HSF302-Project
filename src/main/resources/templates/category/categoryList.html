@@ -1,42 +1,144 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Category Management</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Management - Hoa Xanh Garden</title>
+    <style>
+        body#category-page {
+            font-family: Arial, sans-serif;
+            background-color: #f0fff0; /* pale green background */
+            color: #006400; /* dark green text */
+            margin: 20px;
+        }
+
+        h1#category-title {
+            text-align: center;
+            color: #228B22; /* forest green */
+            margin-bottom: 20px;
+        }
+
+        form#search-form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input#search-input {
+            width: 300px;
+            padding: 8px;
+            border: 1px solid #228B22;
+            border-radius: 5px;
+        }
+
+        button.btn {
+            background-color: #228B22;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        button.btn:hover {
+            background-color: #006400;
+        }
+
+        table#category-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table#category-table th, table#category-table td {
+            border: 1px solid #228B22;
+            padding: 8px;
+            text-align: center;
+        }
+
+        table#category-table th {
+            background-color: #228B22;
+            color: white;
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .success-message {
+            color: green;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .back-container {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        a.back-link {
+            text-decoration: none;
+        }
+    </style>
 </head>
-<body>
-<form th:action="@{/categories/searchByName}" method="post">
-    <input type="text" name="categoryName" placeholder="Enter category name to search" th:value="${param.categoryName!=null?param.categoryName:''}" required>
-    <input type="submit" value="Search">
+<body id="category-page">
+
+<h1 id="category-title">Category List</h1>
+
+<!-- Search Form -->
+<form id="search-form" th:action="@{/categories/searchByName}" method="post">
+    <input type="text" name="categoryName" id="search-input" placeholder="Enter category name to search"
+           th:value="${param.categoryName!=null?param.categoryName:''}" required>
+    <button type="submit" class="btn">Search</button>
 </form>
-<a th:href="@{/categories/createPage}"><button>Add New Category</button></a>
-<p th:if="${message}" th:text="${message}"></p>
-<p th:if="${error}" th:text="${error}"></p>
-<h1>Category List</h1>
-<table border="1">
+
+<!-- Add New Category -->
+<div class="back-container" style="margin-bottom: 10px">
+    <a th:href="@{/categories/createPage}" class="back-link">
+        <button class="btn" id="btn-add-category">Add New Category</button>
+    </a>
+</div>
+
+<!-- Messages -->
+<p class="success-message" th:if="${message}" th:text="${message}"></p>
+<p class="error-message" th:if="${error}" th:text="${error}"></p>
+
+<!-- Category Table -->
+<table id="category-table">
+    <thead>
     <tr>
         <th>ID</th>
         <th>Category Name</th>
         <th>Description</th>
         <th>Action</th>
     </tr>
-    <tr th:each="category :${categoryList}">
+    </thead>
+    <tbody>
+    <tr th:each="category : ${categoryList}">
         <td th:text="${category.id}"></td>
         <td th:text="${category.categoryName}"></td>
         <td th:text="${category.description}"></td>
-        <td><a th:href="@{/categories/deleteCategory/{id}(id=${category.id})}" onclick="return confirm('Are you sure to delete?')"><button>Delete</button></a>
-            <a th:href="@{/categories/updatePage/{id}(id=${category.id})}"><button>Update</button></a></td>
+        <td>
+            <a th:href="@{/categories/deleteCategory/{id}(id=${category.id})}"
+               onclick="return confirm('Are you sure to delete?')">
+                <button class="btn btn-danger">Delete</button>
+            </a>
+            <a th:href="@{/categories/updatePage/{id}(id=${category.id})}">
+                <button class="btn btn-secondary">Update</button>
+            </a>
+        </td>
     </tr>
+    </tbody>
 </table>
-<div th:if="${session.user.id==1}">
-    <a th:href="@{/user/adminHome}"><button>Back To Home</button></a>
+
+<!-- Back to Home -->
+<div class="back-container">
+    <a th:href="@{/home}" class="back-link">
+        <button class="btn">Back To Home</button>
+    </a>
 </div>
-<div th:if="${session.user.id==2}">
-    <a th:href="@{/user/staffHome}"><button>Back To Home</button></a>
-</div>
-<div th:if="${session.user.id==3}">
-    <a th:href="@{/user/customerHome}"><button>Back To Home</button></a>
-</div>
+
 </body>
 </html>

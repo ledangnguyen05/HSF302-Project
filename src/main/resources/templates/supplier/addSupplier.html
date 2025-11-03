@@ -3,42 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Supplier Page</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <title>Add New Supplier - Hoa Xanh Garden</title>
     <style>
-        .register-container label {
-            color: black;
+        body#add-supplier-page {
+            font-family: Arial, sans-serif;
+            background-color: #f0fff0; /* pale green */
+            color: #006400; /* dark green text */
+            padding: 30px;
+        }
+
+        .register-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border: 1px solid #228B22;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        h2#add-supplier-title {
+            color: #228B22;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label.form-label {
+            display: block;
+            margin-bottom: 5px;
+            color: #228B22;
+        }
+
+        input.form-input {
+            width: 100%;
+            padding: 6px 10px;
+            margin-bottom: 15px;
+            border: 1px solid #228B22;
+            border-radius: 5px;
+        }
+
+        button.btn {
+            padding: 8px 16px;
+            background-color: #228B22;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button.btn:hover {
+            background-color: #006400;
         }
 
         .error {
             color: red;
+            font-size: 0.9em;
+            margin-bottom: 10px;
         }
+
+        a.back-link {
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
     </style>
 </head>
-<body>
-<div class="register-container">
-   <h2>Add New Supplier</h2>
-    <form th:action="@{/suppliers/addExecute}" method="post" th:object="${supplier}">
-        <label for="supplierName">Supplier Name:</label>
-        <input type="text"  id="supplierName" th:field="*{supplierName}" placeholder="Enter supplier name">
+<body id="add-supplier-page">
+<div class="register-container" id="supplier-form-container">
+    <h2 id="add-supplier-title">Add New Supplier</h2>
+    <form th:action="@{/suppliers/addExecute}" method="post" th:object="${supplier}" id="add-supplier-form">
+
+        <label for="supplierName" class="form-label">Supplier Name:</label>
+        <input type="text" id="supplierName" th:field="*{supplierName}" placeholder="Enter supplier name" class="form-input">
         <div class="error" th:if="${#fields.hasErrors('supplierName')}" th:errors="*{supplierName}"></div>
 
-        <label for="contactName">Contact Name:</label>
-        <input type="text" id="contactName" th:field="*{contactName}" placeholder="Enter contact name">
+        <label for="contactName" class="form-label">Contact Name:</label>
+        <input type="text" id="contactName" th:field="*{contactName}" placeholder="Enter contact name" class="form-input">
         <div class="error" th:if="${#fields.hasErrors('contactName')}" th:errors="*{contactName}"></div>
 
-        <label for="phone">Phone:</label>
-        <input type="text" id="phone" th:field="*{phone}" placeholder="Enter phone">
+        <label for="phone" class="form-label">Phone:</label>
+        <input type="text" id="phone" th:field="*{phone}" placeholder="Enter phone" class="form-input">
         <div class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
 
-        <label for="address">Address:</label>
-        <input type="text" id="address" th:field="*{address}" placeholder="Enter address">
+        <label for="address" class="form-label">Address:</label>
+        <input type="text" id="address" th:field="*{address}" placeholder="Enter address" class="form-input">
         <div class="error" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
 
-        <button type="submit">Add</button>
+        <button type="submit" class="btn">Add</button>
     </form>
-    <a th:href="@{/suppliers/listSuppliers}"><button>🔙 Back To Supplier List</button></a>
-    <p  class="error" th:if="${error}" th:text="${error}"></p>
+
+    <a th:href="@{/suppliers/listSuppliers}" class="back-link">
+        <button class="btn">🔙 Back To Supplier List</button>
+    </a>
+
+    <p class="error" th:if="${error}" th:text="${error}"></p>
 </div>
 </body>
 </html>

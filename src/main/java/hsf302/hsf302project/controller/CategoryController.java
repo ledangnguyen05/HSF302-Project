@@ -62,7 +62,7 @@ public class CategoryController {
     @GetMapping("/updatePage/{id}")
     public String updateCategoryPage(@PathVariable int id, Model model) {
         model.addAttribute("category", categoryService.findByCategoryId(id));
-        return "category/addCategory";
+        return "category/updateCategory";
     }
 
     @PostMapping("/updateExecute")
@@ -72,12 +72,12 @@ public class CategoryController {
                                         RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             model.addAttribute("category", category);
-            return "category/addCategory";
+            return "category/updateCategory";
         }
 
         if (categoryRepository.findByCategoryNameIgnoreCase(category.getCategoryName()).isPresent()) {
             model.addAttribute("error", "Category name is already taken");
-            return "category/addCategory";
+            return "category/updateCategory";
         }
 
         boolean isupdated = categoryService.updateCategory(category.getId(), category);

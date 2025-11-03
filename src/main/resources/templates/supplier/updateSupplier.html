@@ -3,45 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Supplier Page</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <title>Update Supplier - Hoa Xanh Garden</title>
     <style>
-        .update-container label {
-            color: black;
+        body#update-supplier-page {
+            font-family: Arial, sans-serif;
+            background-color: #f0fff0; /* pale green */
+            color: #006400; /* dark green text */
+            padding: 30px;
+        }
+
+        .container#update-supplier-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border: 1px solid #228B22;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        h2#update-supplier-title {
+            color: #228B22;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form#update-supplier-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        label.form-label {
+            color: #006400;
+            font-weight: bold;
+        }
+
+        input.form-input {
+            padding: 6px 10px;
+            border-radius: 5px;
+            border: 1px solid #228B22;
+        }
+
+        button.btn {
+            padding: 8px 16px;
+            border-radius: 5px;
+            border: none;
+            background-color: #228B22;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button.btn:hover {
+            background-color: #006400;
         }
 
         .error {
             color: red;
+            font-size: 0.9em;
+        }
+
+        a.back-link {
+            text-decoration: none;
         }
     </style>
 </head>
-<body>
-<div class="update-container">
-    <h2>Update Supplier</h2>
-    <form th:action="@{/suppliers/updateExecute}" method="post" th:object="${supplier}">
-        <label for="id">Supplier Name:</label>
-        <input type="text" id="id" th:field="*{id}" readonly>
+<body id="update-supplier-page">
+<div class="container" id="update-supplier-container">
+    <h2 id="update-supplier-title">Update Supplier</h2>
+    <form id="update-supplier-form" th:action="@{/suppliers/updateExecute}" method="post" th:object="${supplier}">
+        <label for="id" class="form-label">Supplier ID:</label>
+        <input type="text" id="id" th:field="*{id}" class="form-input" readonly>
 
-        <label for="supplierName">Supplier Name:</label>
-        <input type="text"  id="supplierName" th:field="*{supplierName}" placeholder="Enter supplier name">
+        <label for="supplierName" class="form-label">Supplier Name:</label>
+        <input type="text" id="supplierName" th:field="*{supplierName}" class="form-input" placeholder="Enter supplier name">
         <div class="error" th:if="${#fields.hasErrors('supplierName')}" th:errors="*{supplierName}"></div>
 
-        <label for="contactName">Contact Name:</label>
-        <input type="text" id="contactName" th:field="*{contactName}" placeholder="Enter contact name">
+        <label for="contactName" class="form-label">Contact Name:</label>
+        <input type="text" id="contactName" th:field="*{contactName}" class="form-input" placeholder="Enter contact name">
         <div class="error" th:if="${#fields.hasErrors('contactName')}" th:errors="*{contactName}"></div>
 
-        <label for="phone">Phone:</label>
-        <input type="text" id="phone" th:field="*{phone}" placeholder="Enter phone">
+        <label for="phone" class="form-label">Phone:</label>
+        <input type="text" id="phone" th:field="*{phone}" class="form-input" placeholder="Enter phone">
         <div class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
 
-        <label for="address">Address:</label>
-        <input type="text" id="address" th:field="*{address}" placeholder="Enter address">
+        <label for="address" class="form-label">Address:</label>
+        <input type="text" id="address" th:field="*{address}" class="form-input" placeholder="Enter address">
         <div class="error" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
 
-        <button type="submit">Update</button>
+        <button type="submit" class="btn">Update</button>
     </form>
-    <a th:href="@{/suppliers/listSuppliers}"><button>🔙 Back To Home</button></a>
-    <p  class="error" th:if="${error}" th:text="${error}"></p>
+    <a th:href="@{/suppliers/listSuppliers}" class="back-link"><button class="btn">🔙 Back To Home</button></a>
+    <p class="error" th:if="${error}" th:text="${error}"></p>
 </div>
 </body>
 </html>
