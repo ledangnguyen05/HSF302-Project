@@ -1,0 +1,130 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+
+/* ===== LAYOUT ===== */
+body {
+    display: flex;
+    min-height: 100vh;
+    background: #f6fff8;
+}
+
+aside {
+    width: 240px;
+    background: #006d5b;
+    padding: 20px;
+    color: white;
+    position: fixed;
+    height: 100vh;
+}
+
+aside a {
+    display: block;
+    padding: 12px;
+    color: white;
+    text-decoration: none;
+    margin: 6px 0;
+    border-radius: 8px;
+    transition: 0.25s;
+}
+
+aside a:hover,
+aside a.active {
+    background: #0bb77b;
+}
+
+main {
+    margin-left: 260px;
+    padding: 30px;
+    width: 100%;
+}
+
+/* ===== HEADER ===== */
+header h1 {
+    background: #009879;
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+/* ===== CARDS ===== */
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    transition: 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+/* ===== TABLE ===== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+
+thead {
+    background: #009879;
+    color: white;
+}
+
+thead th {
+    padding: 14px;
+    text-align: left;
+    font-size: 15px;
+}
+
+tbody tr {
+    transition: 0.2s;
+}
+
+tbody tr:nth-child(even) {
+    background: #f3fdf8;
+}
+
+tbody td {
+    padding: 12px;
+    border-bottom: 1px solid #e6f5ef;
+}
+
+tbody tr:hover {
+    background: #ddfff1;
+}
+
+/* ===== BUTTON ===== */
+button {
+    padding: 8px 16px;
+    border: none;
+    background: #009879;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.25s;
+}
+
+button:hover {
+    background: #0bb77b;
+    transform: scale(1.05);
+}
+
+/* Responsive */
+@media(max-width: 900px) {
+    aside {
+        width: 180px;
+    }
+    main {
+        margin-left: 200px;
+    }
+}

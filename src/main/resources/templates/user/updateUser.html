@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cập Nhật Người Dùng - Hoa Xanh Garden</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" th:href="@{/admin_styles.css}">
     <style>
         body#update-page {
             font-family: "Segoe UI", Arial, sans-serif;
@@ -158,13 +158,15 @@
         <div class="error" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
 
         <label for="status" class="form-label">Trạng thái:</label>
-        <select id="status" th:field="*{active}" class="form-select" required>
+        <select id="status" th:field="*{active}" class="form-select" required
+                th:disabled="${session.user.role.id !=1}">
             <option th:value="true">Hoạt động</option>
             <option th:value="false">Vô hiệu hóa</option>
         </select>
 
         <label for="role" class="form-label">Vai trò:</label>
-        <select id="role" th:field="*{role}" class="form-select" required>
+        <select id="role" th:field="*{role}" class="form-select" required
+                th:disabled="${session.user.role.id != 1}">
             <option value="" disabled>-- Chọn vai trò --</option>
             <option th:each="r : ${roleList}"
                     th:value="${r.id}"
@@ -180,12 +182,7 @@
     </form>
 
     <div class="back-buttons">
-        <a th:if="${session.user.id==3}" th:href="@{/home}">
-            <button id="btn-back-customer" class="btn btn-back">🔙 Quay lại</button>
-        </a>
-        <a th:if="${session.user.id==1}" th:href="@{/users/listUsers}">
-            <button id="btn-back-admin" class="btn btn-back">🔙 Quay lại</button>
-        </a>
+        <button onclick="history.back()" class="btn btn-back">🔙 Quay lại</button>
     </div>
 
     <p class="error global-error" th:if="${error}" th:text="${error}"></p>

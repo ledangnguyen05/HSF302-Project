@@ -1,5 +1,6 @@
 package hsf302.hsf302project.controller;
 
+import hsf302.hsf302project.entity.RoleEntity;
 import hsf302.hsf302project.entity.UserEntity;
 import hsf302.hsf302project.repository.RoleRepository;
 import hsf302.hsf302project.repository.UserRepository;
@@ -68,6 +69,14 @@ public class UserController {
             model.addAttribute("roleList", roleRepository.findAll());
             return "user/register";
         }
+        UserEntity sessionUser = (UserEntity) session.getAttribute("user");
+
+        //Nếu là khách thì chỉ tao dc tai khoan role customer
+        if (sessionUser == null) {
+            RoleEntity customerRole = roleRepository.findByRoleName("CUSTOMER");
+            userEntity.setRole(customerRole);
+        }
+
         boolean success = userService.registerUser(userEntity);
         if (!success) {
             model.addAttribute("error", "Registration failed");
