@@ -49,13 +49,22 @@ public class UserEntity {
     private String address;
 
     @Column(name = "IsActive", nullable = false)
+    @Builder.Default
     private boolean isActive = true;
 
     @Column(name = "CreatedAt", nullable = false)
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "UpdatedAt")
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
 
     @PreUpdate
     public void preUpdate() {
