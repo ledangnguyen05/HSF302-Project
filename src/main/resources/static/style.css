@@ -1,11 +1,11 @@
-/* ---------- VARIABLES ---------- */
+/* ---------- 🌿 VARIABLES ---------- */
 :root {
     --primary-green: #4CAF50;
     --secondary-green: #66BB6A;
     --light-green: #A5D6A7;
     --text-color: #2E7D32;
     --bg-light: #F1F8E9;
-    --card-bg: white;
+    --card-bg: #FFFFFF;
     --shadow-color: rgba(0, 0, 0, 0.1);
 }
 
@@ -14,19 +14,22 @@ body {
     font-family: 'Segoe UI', sans-serif;
     margin: 0;
     padding: 0;
-    color: var(--text-color); /* 🌿 Dark green text */
+    color: var(--text-color);
     background-color: var(--bg-light);
+    line-height: 1.6;
 }
 
 h1, h2, h3 {
     margin: 0;
-    color: var(--text-color); /* 🌿 Dark green instead of white */
+    color: var(--text-color);
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
+    font-weight: 600;
 }
-
 
 a {
     text-decoration: none;
     color: white;
+    transition: color 0.3s ease;
 }
 
 a:hover {
@@ -35,10 +38,11 @@ a:hover {
 
 /* ---------- HEADER ---------- */
 header {
-    background-color: var(--primary-green);
+    background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
     color: white;
     text-align: center;
     padding: 20px 0;
+    box-shadow: 0 2px 6px var(--shadow-color);
 }
 
 /* ---------- NAV ---------- */
@@ -48,15 +52,28 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 nav a {
     font-weight: bold;
-    margin: 0 10px;
+    margin: 5px 10px;
+    position: relative;
 }
 
-nav a:hover {
-    color: white;
+nav a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    left: 0;
+    bottom: -3px;
+    background-color: white;
+    transition: width 0.3s ease;
+}
+
+nav a:hover::after {
+    width: 100%;
 }
 
 /* ---------- HERO ---------- */
@@ -68,6 +85,7 @@ nav a:hover {
     color: white;
     text-shadow: 1px 1px 5px #000;
     font-size: 28px;
+    background: linear-gradient(135deg, #66BB6A, #388E3C);
 }
 
 /* ---------- PRODUCTS ---------- */
@@ -75,35 +93,43 @@ nav a:hover {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    padding: 30px;
-    gap: 20px;
+    padding: 40px 20px;
+    gap: 25px;
 }
 
 .product-card {
     width: 250px;
-    border-radius: 10px;
+    border-radius: 12px;
     background-color: var(--card-bg);
-    box-shadow: 0 3px 5px var(--shadow-color);
+    box-shadow: 0 4px 8px var(--shadow-color);
     text-align: center;
-    padding: 15px;
-    transition: transform 0.2s ease;
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .product-card:hover {
-    transform: scale(1.03);
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px var(--shadow-color);
 }
 
 .product-card img {
     width: 100%;
     border-radius: 10px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.product-card img:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
 }
 
 .product-card h3 {
-    color: white;
+    margin-top: 10px;
+    color: var(--text-color);
 }
 
 .product-card p {
-    color: #6D4C41;
+    color: #4E342E;
 }
 
 /* ---------- BUTTONS ---------- */
@@ -111,14 +137,17 @@ button {
     background-color: var(--primary-green);
     border: none;
     color: white;
-    padding: 8px 12px;
+    padding: 10px 16px;
     border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 button:hover {
     background-color: var(--secondary-green);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
 
 /* ---------- FOOTER ---------- */
@@ -127,7 +156,7 @@ footer {
     color: white;
     text-align: center;
     padding: 15px;
-    margin-top: 20px;
+    margin-top: 40px;
 }
 
 /* ---------- ASIDE / SIDEBAR ---------- */
@@ -137,6 +166,7 @@ aside {
     padding: 20px;
     position: fixed;
     background-color: var(--primary-green);
+    box-shadow: 2px 0 8px var(--shadow-color);
 }
 
 aside h2 {
@@ -151,6 +181,7 @@ aside a {
     padding: 10px 15px;
     border-radius: 6px;
     margin: 8px 0;
+    transition: background-color 0.3s ease;
 }
 
 aside a:hover, aside a.active {
@@ -165,17 +196,22 @@ main {
 }
 
 /* ---------- TABLES ---------- */
+.table-container {
+    overflow-x: auto;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
     background-color: var(--card-bg);
     border-radius: 8px;
     margin-top: 20px;
+    box-shadow: 0 3px 6px var(--shadow-color);
 }
 
 th, td {
-    border: 1px solid var(--light-green);
-    padding: 10px;
+    border: 1px solid #E0E0E0;
+    padding: 12px;
     text-align: center;
 }
 
@@ -184,57 +220,85 @@ th {
     color: white;
 }
 
+tr:nth-child(even) {
+    background-color: #F9FBE7;
+}
+
+tr:hover {
+    background-color: #E8F5E9;
+    transition: background-color 0.2s;
+}
+
 /* ---------- CARDS ---------- */
 .card {
     background-color: var(--card-bg);
     border-radius: 8px;
-    padding: 15px;
-    margin: 15px 0;
-    box-shadow: 0 2px 5px var(--shadow-color);
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 3px 6px var(--shadow-color);
     text-align: center;
 }
 
 /* ---------- FORM ELEMENTS ---------- */
 input, select, textarea {
-    padding: 8px 12px;
+    padding: 10px 12px;
     border-radius: 6px;
     border: 1px solid #ccc;
     width: 100%;
-    margin: 8px 0;
+    margin-bottom: 15px;
     box-sizing: border-box;
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 input:focus, select:focus, textarea:focus {
-    border-color: white;
+    border-color: var(--secondary-green);
+    box-shadow: 0 0 5px var(--light-green);
     outline: none;
 }
 
-/* ---------- LOGIN / REGISTER PAGE ---------- */
+/* ---------- LOGIN / REGISTER / UPDATE CONTAINERS ---------- */
 .login-container, .register-container, .update-container {
     max-width: 400px;
-    margin: 50px auto;
+    margin: 60px auto;
     background-color: var(--card-bg);
-    padding: 25px;
+    padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 3px 8px var(--shadow-color);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
 
 .login-container h2, .register-container h2, .update-container h2 {
-    color: white;
+    color: var(--primary-green);
     text-align: center;
     margin-bottom: 20px;
 }
 
-.login-container h2, .register-container h2, .update-container label {
-    color: black;
+label {
+    color: var(--text-color);
+    font-weight: 500;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* ---------- ERROR & MESSAGE ---------- */
+.error {
+    color: #D32F2F;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.message {
+    color: #388E3C;
+    font-size: 14px;
+    margin-top: 5px;
 }
 
 /* ---------- RESPONSIVE ---------- */
-@media (max-width: 768px) {
+@media (max-width: 992px) {
     aside {
         position: relative;
         width: 100%;
         height: auto;
+        box-shadow: none;
     }
 
     main {
@@ -244,8 +308,95 @@ input:focus, select:focus, textarea:focus {
 
     nav {
         flex-direction: column;
+        align-items: flex-start;
+    }
+
+    nav a {
+        margin: 5px 0;
+    }
+
+    .product-card {
+        width: 100%;
+        max-width: 320px;
     }
 }
-.error {
+
+@media (max-width: 576px) {
+    body {
+        font-size: 14px;
+    }
+
+    h1 {
+        font-size: 22px;
+    }
+
+    button {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+}
+body#user-page {
+    font-family: Arial, sans-serif;
+    background-color: #f5f6fa;
+    margin: 20px;
+}
+
+#search-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.form-input, .form-select {
+    padding: 5px 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.btn {
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.btn-primary { background-color: #007bff; color: white; }
+.btn-secondary { background-color: #17a2b8; color: white; }
+.btn-danger { background-color: #dc3545; color: white; }
+.btn-back { background-color: #6c757d; color: white; }
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    margin-bottom: 30px;
+}
+
+.user-table th, .user-table td {
+    padding: 8px 12px;
+    text-align: center;
+}
+
+.user-table th {
+    background-color: #007bff;
+    color: white;
+}
+
+.action-buttons button {
+    margin-right: 5px;
+}
+
+.error-message {
     color: red;
+    font-weight: bold;
+}
+
+.success-message {
+    color: green;
+    font-weight: bold;
+}
+
+#back-container {
+    text-align: center;
+    margin-top: 20px;
 }

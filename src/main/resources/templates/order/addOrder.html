@@ -1,22 +1,99 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Add Order</title>
-    <link rel="stylesheet"
-          th:href="@{/style.css}">
+    <title>Add Order - Hoa Xanh Garden</title>
     <style>
-        body { padding: 30px; background-color: #f8f9fa; }
-        .card { border-radius: 12px; }
-        .table td, .table th { vertical-align: middle; }
+        body#add-order-page {
+            font-family: Arial, sans-serif;
+            background-color: #f0fff0; /* pale green */
+            color: #006400; /* dark green text */
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .card {
+            border-radius: 12px;
+            border: 1px solid #228B22;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        h2#add-order-title {
+            text-align: center;
+            color: #228B22;
+            margin-bottom: 20px;
+        }
+
+        form#add-order-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label.form-label {
+            margin-top: 10px;
+            color: #006400;
+        }
+
+        input.form-control, textarea.form-control, select.form-select {
+            padding: 8px;
+            border: 1px solid #228B22;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        table#detailsTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        table#detailsTable th, table#detailsTable td {
+            border: 1px solid #228B22;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .btn {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: #228B22;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #006400;
+        }
+
+        .btn-sm {
+            padding: 5px 8px;
+            font-size: 0.9rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        a.back-link {
+            text-decoration: none;
+        }
     </style>
 </head>
-<body>
+<body id="add-order-page">
+
 <div class="container">
     <div class="card shadow p-4">
-        <h2 class="text-center mb-4">🧾 Add New Order</h2>
+        <h2 id="add-order-title">🧾 Add New Order</h2>
 
-        <form th:action="@{/orders/addExecute}" th:object="${order}" method="post">
+        <form id="add-order-form" th:action="@{/orders/addExecute}" th:object="${order}" method="post">
             <div class="mb-3">
                 <label class="form-label">Customer ID</label>
                 <input type="text" class="form-control" th:field="*{customer.id}" required>
@@ -27,7 +104,6 @@
                 <textarea class="form-control" th:field="*{notes}" rows="2"></textarea>
             </div>
 
-            <!-- Order Details -->
             <h5>Order Details</h5>
             <table class="table table-bordered" id="detailsTable">
                 <thead class="table-light">
@@ -45,28 +121,17 @@
                         <select class="form-select productSelect"
                                 th:field="*{orderDetails[__${stat.index}__].product.id}" required>
                             <option value="" disabled selected>--Choose Product--</option>
-                            <option th:each="p : ${products}"
-                                    th:value="${p.id}"
-                                    th:text="${p.productName}"
-                                    th:data-price="${p.unitPrice}">
-                            </option>
+                            <option th:each="p : ${products}" th:value="${p.id}" th:text="${p.productName}" th:data-price="${p.unitPrice}"></option>
                         </select>
                     </td>
-                    <td>
-                        <input type="text" class="unitPrice form-control" readonly
-                               th:field="*{orderDetails[__${stat.index}__].unitPrice}">
-
-                    </td>
-                    <td>
-                        <input type="number" class="quantity form-control"
-                               th:field="*{orderDetails[__${stat.index}__].quantity}" min="1" value="1" required>
-                    </td>
+                    <td><input type="text" class="unitPrice form-control" readonly th:field="*{orderDetails[__${stat.index}__].unitPrice}"></td>
+                    <td><input type="number" class="quantity form-control" th:field="*{orderDetails[__${stat.index}__].quantity}" min="1" value="1" required></td>
                     <td class="totalCell">0.00</td>
                     <td><button type="button" class="btn btn-danger btn-sm removeDetail">X</button></td>
                 </tr>
                 </tbody>
-
             </table>
+
             <button type="button" class="btn btn-success btn-sm mb-3" id="addDetail">+ Add Item</button>
 
             <hr>
@@ -76,11 +141,16 @@
         </form>
     </div>
 </div>
-<a th:href="@{/orders/listOrders}"><button>🔙 Back</button></a>
+
+<div class="back-container text-center mt-3">
+    <a th:href="@{/orders/listOrders}" class="back-link">
+        <button class="btn">🔙 Back</button>
+    </a>
+</div>
+
 <script>
     const detailsBody = document.getElementById("detailsBody");
 
-    // When product selected, populate unit price
     detailsBody.addEventListener("change", e => {
         if(e.target.classList.contains("productSelect")){
             const row = e.target.closest("tr");
@@ -91,7 +161,6 @@
         }
     });
 
-    // Recalculate total when quantity changes
     detailsBody.addEventListener("input", e => {
         if(e.target.classList.contains("quantity")){
             const row = e.target.closest("tr");
@@ -101,7 +170,6 @@
         }
     });
 
-    // Add new detail row
     document.getElementById("addDetail").addEventListener("click", () => {
         const templateRow = detailsBody.querySelector("tr").cloneNode(true);
         templateRow.querySelector(".productSelect").selectedIndex = 0;
@@ -111,7 +179,6 @@
         detailsBody.appendChild(templateRow);
     });
 
-    // Remove detail row
     detailsBody.addEventListener("click", e => {
         if(e.target.classList.contains("removeDetail")){
             if(detailsBody.rows.length > 1){
@@ -120,5 +187,6 @@
         }
     });
 </script>
+
 </body>
 </html>

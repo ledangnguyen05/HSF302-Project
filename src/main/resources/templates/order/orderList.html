@@ -1,29 +1,116 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Order List</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <title>Order List - Hoa Xanh Garden</title>
     <style>
-        body { padding: 30px; background-color: #f8f9fa; }
-        .card { border-radius: 12px; }
-        .table thead { background-color: #0d6efd; color: white; }
-        .action-btns button { margin-right: 6px; }
+        body#order-list-page {
+            font-family: Arial, sans-serif;
+            background-color: #f0fff0; /* pale green */
+            color: #006400; /* dark green text */
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            border-radius: 12px;
+            border: 1px solid #228B22;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        h2#order-list-title {
+            color: #228B22;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            background-color: #228B22;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #006400;
+        }
+
+        a.back-link {
+            text-decoration: none;
+        }
+
+        table#orderTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        table#orderTable th, table#orderTable td {
+            border: 1px solid #228B22;
+            padding: 8px;
+            text-align: center;
+        }
+
+        table#orderTable thead {
+            background-color: #228B22;
+            color: white;
+        }
+
+        .action-btns button {
+            margin-right: 6px;
+        }
+
+        .form-select, input.form-control {
+            border: 1px solid #228B22;
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .row.g-2 {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .col-md-2, .col-md-3, .col-md-6 {
+            flex: 1;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: #6c757d;
+        }
+
     </style>
 </head>
-<body>
+<body id="order-list-page">
+
 <div class="container">
     <div class="card shadow p-4">
+        <h2 id="order-list-title">📦 Order Management</h2>
+
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>📦 Order Management</h2>
-            <a th:href="@{/orders/addPage}" class="btn btn-primary"><button>+ Add New Order</button></a>
+            <a th:href="@{/orders/addPage}" class="btn"><button class="btn">+ Add New Order</button></a>
         </div>
 
         <!-- Search box -->
-        <form class="mb-4" th:action="@{/orders/search}" method="get" th:if="${session.user.id!=3}">
+        <form class="mb-4" th:action="@{/orders/search}" method="get" th:if="${session.user.role.id!=3}">
             <div class="row g-2 align-items-center">
-
-                <!-- Search Type -->
                 <div class="col-md-3">
                     <select class="form-select" id="searchType" name="searchType" required>
                         <option value="" disabled selected>-- Choose search type --</option>
@@ -33,16 +120,13 @@
                     </select>
                 </div>
 
-                <!-- Keyword or Dynamic Input -->
                 <div class="col-md-6" id="searchInputArea">
-                    <!-- default input (customer name) -->
                     <input type="text" class="form-control" id="keyword" name="keyword"
-                           placeholder="Enter customer name...">
+                           placeholder="Enter customer name..." required>
                 </div>
 
-                <!-- Search Button -->
                 <div class="col-md-2">
-                    <button class="btn btn-outline-primary w-100" type="submit">Search</button>
+                    <button class="btn" type="submit">Search</button>
                 </div>
             </div>
         </form>
@@ -55,36 +139,29 @@
                 const type = searchTypeSelect.value;
 
                 if (type === "byCustomerName") {
-                    searchInputArea.innerHTML = `
-                <input type="text" class="form-control" name="keyword"
-                       placeholder="Enter customer name..." required>
-            `;
-                }
-                else if (type === "byDateRange") {
-                    searchInputArea.innerHTML = `
-                <div class="input-group">
+                    searchInputArea.innerHTML = `<input type="text" class="form-control" name="keyword"
+                       placeholder="Enter customer name..." required>`;
+                } else if (type === "byDateRange") {
+                    searchInputArea.innerHTML = `<div class="input-group">
                     <input type="date" class="form-control" name="startDate" required>
                     <span class="input-group-text">to</span>
                     <input type="date" class="form-control" name="endDate" required>
-                </div>
-            `;
-                }
-                else if (type === "byStatus") {
-                    searchInputArea.innerHTML = `
-                <select class="form-select" name="status" required>
+                </div>`;
+                } else if (type === "byStatus") {
+                    searchInputArea.innerHTML = `<select class="form-select" name="status" required>
                     <option value="" disabled selected>-- Choose Status --</option>
                     <option value="PENDING">Pending</option>
                     <option value="CONFIRMED">Confirmed</option>
                     <option value="IN_PREPARING">In Preparing</option>
                     <option value="FINISHED">Finished</option>
                     <option value="CANCELLED">Cancelled</option>
-                </select>
-            `;
+                </select>`;
                 }
             });
         </script>
 
-        <table class="table table-hover table-bordered align-middle text-center" th:if="${session.user.id!=3}">
+        <!-- Orders Table -->
+        <table class="table table-hover table-bordered align-middle text-center" id="orderTable" th:if="${session.user.role.id!=3}">
             <thead>
             <tr>
                 <th>#</th>
@@ -109,30 +186,21 @@
                 <td th:text="${order.orderDetails[0].quantity}"></td>
                 <td th:text="${#temporals.format(order.orderDate, 'HH:mm dd/MM/yyyy')}"></td>
                 <td th:text="${#numbers.formatInteger(order.totalAmount,0)}"></td>
-
-                <td>
-                    <span th:switch="${order.status}">
-                        <span th:case="'PENDING'" class="badge bg-warning">Pending</span>
-                        <span th:case="'CONFIRMED'" class="badge bg-info">Confirmed</span>
-                        <span th:case="'IN_PREPARING'" class="badge bg-primary">Preparing</span>
-                        <span th:case="'FINISHED'" class="badge bg-success">Finished</span>
-                        <span th:case="'CANCELLED'" class="badge bg-danger">Cancelled</span>
-                        <span th:case="*">Unknown</span>
-                    </span>
-                </td>
-                <td class="action-btns" th:if="${session.user.id==1}">
-                    <a th:href="@{/orders/delete/{id}(id=${order.orderID})}"
-                       onclick="return confirm('Are you sure do delete?')">
-                        <button  type="button" class="btn btn-sm btn-outline-danger">Delete</button></a>
+                <td th:text="${order.status}"></td>
+                <td class="action-btns" th:if="${session.user.role.id==3}">
+                    <a th:href="@{/orders/delete/{id}(id=${order.orderID})}" onclick="return confirm('Are you sure to delete?')">
+                        <button class="btn">Delete</button>
+                    </a>
                 </td>
             </tr>
             <tr th:if="${orders.isEmpty()}">
-                <td colspan="7" class="text-center text-muted">No orders found.</td>
+                <td colspan="10" class="text-center text-muted">No orders found.</td>
             </tr>
             </tbody>
         </table>
 
-        <table class="table table-hover table-bordered align-middle text-center" th:if="${session.user.id==3}">
+        <!-- Customer view -->
+        <table class="table table-hover table-bordered align-middle text-center" id="orderTableCustomer" th:if="${session.user.role.id==3}">
             <thead>
             <tr>
                 <th>#</th>
@@ -141,24 +209,39 @@
                 <th>Quantity</th>
                 <th>Order Date</th>
                 <th>Total Cost</th>
+                <th>Status</th>
+                <th>Action</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="order, iStat : ${orders}">
+            <tr th:each="order, iStat : ${orders}" th:if="${order.status != T(hsf302.hsf302project.entity.OrderEntity.Status).CANCELLED}">
                 <td th:text="${iStat.index + 1}"></td>
                 <td th:text="${order.orderDetails[0].product.productName}"></td>
                 <td th:text="${#numbers.formatInteger(order.orderDetails[0].product.unitPrice,0)}"></td>
                 <td th:text="${order.orderDetails[0].quantity}"></td>
                 <td th:text="${#temporals.format(order.orderDate, 'HH:mm dd/MM/yyyy')}"></td>
                 <td th:text="${#numbers.formatInteger(order.totalAmount,0)}"></td>
+                <td th:text="${order.status}"></td>
+                <td>
+                    <a th:href="@{/orders/cancel/{id}(id=${order.orderID})}" onclick="return confirm('Are you sure to cancel?')">
+                        <button class="btn">Cancel</button>
+                    </a>
+                </td>
             </tr>
             <tr th:if="${orders.isEmpty()}">
-                <td colspan="7" class="text-center text-muted">No orders found.</td>
+                <td colspan="8" class="text-center text-muted">No orders found.</td>
             </tr>
             </tbody>
         </table>
+
     </div>
 </div>
-<a th:href="@{/home}"><button>🔙 Back To Home</button></a>
+
+<div class="text-center mt-3">
+    <a th:href="@{/home}" class="back-link">
+        <button class="btn">🔙 Back To Home</button>
+    </a>
+</div>
+
 </body>
 </html>

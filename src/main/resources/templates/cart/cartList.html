@@ -1,35 +1,108 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Cart List</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart List - Hoa Xanh Garden</title>
     <style>
-        body a {
-            color: black;
+        /* Body */
+        body#cart-page {
+            font-family: Arial, sans-serif;
+            background-color: #f0fff0; /* pale green background */
+            color: #006400; /* dark green text */
+            margin: 20px;
         }
-        input[type=number] {
+
+        /* Title */
+        h2#cart-title {
+            text-align: center;
+            color: #228B22; /* forest green */
+            margin-bottom: 20px;
+        }
+
+        /* Messages */
+        p.message {
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        p.success-message { color: #228B22; }
+        p.error-message { color: red; }
+
+        /* Table */
+        table#cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table#cart-table th, table#cart-table td {
+            border: 1px solid #228B22;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table#cart-table th {
+            background-color: #98FB98; /* pale green */
+        }
+
+        /* Form inside table */
+        table#cart-table td form {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        input.quantity-input {
             width: 60px;
             text-align: center;
+            border: 1px solid #228B22;
+            border-radius: 4px;
+            padding: 3px;
+        }
+
+        /* Buttons */
+        button.quantity-btn, button.update-btn, button#btn-back {
+            background-color: #228B22;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button.quantity-btn:hover, button.update-btn:hover, button#btn-back:hover {
+            background-color: #006400;
+        }
+
+        /* Action links */
+        a.action-link {
+            text-decoration: none;
+            color: #006400;
+            margin: 0 5px;
+            font-weight: bold;
+        }
+
+        a.action-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Back button container */
+        div#back-container {
+            text-align: center;
+            margin-top: 20px;
         }
     </style>
 </head>
-<body>
-<h2>Cart List</h2>
+<body id="cart-page">
 
-<p th:if="${message}" style="color: green;" th:text="${message}"></p>
-<p th:if="${error}" style="color: red;" th:text="${error}"></p>
+<h2 id="cart-title">Cart List</h2>
 
-<form th:action="@{/carts/searchByCustomer}" method="post">
-    <input type="text" name="customerName" placeholder="Search by customer name">
-    <button type="submit">Search</button>
-</form>
+<p class="message success-message" th:if="${message}" th:text="${message}"></p>
+<p class="message error-message" th:if="${error}" th:text="${error}"></p>
 
-<table border="1" cellpadding="5" cellspacing="0">
+<table id="cart-table">
     <thead>
     <tr>
-        <th>ID</th>
-        <th>Customer</th>
         <th>Product</th>
         <th>Quantity</th>
         <th>Action</th>
@@ -37,27 +110,32 @@
     </thead>
     <tbody>
     <tr th:each="cart : ${cartList}">
-        <td th:text="${cart.id}"></td>
-        <td th:text="${cart.customer.fullName}"></td>
         <td th:text="${cart.product.productName}"></td>
         <td>
-            <form th:action="@{/carts/updateQuantity/{id}(id=${cart.id})}" method="post" style="display:inline">
-                <button type="button" onclick="changeQuantity(this, -1)">-</button>
-                <input type="number" name="quantity" th:value="${cart.quantity}" min="1" readonly>
-                <button type="button" onclick="changeQuantity(this, 1)">+</button>
-                <button type="submit" onclick="return confirm('Confirm update?')">Update</button>
+            <form th:action="@{/carts/updateQuantity/{id}(id=${cart.id})}" method="post">
+                <button type="button" class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                <input type="number" name="quantity" th:value="${cart.quantity}" min="1" readonly class="quantity-input">
+                <button type="button" class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                <button type="submit" class="update-btn" onclick="return confirm('Confirm update?')">Update</button>
             </form>
         </td>
         <td>
-            <a th:href="@{'/carts/deleteCart/' + ${cart.id}}"
+            <a th:href="@{/payment}" class="action-link">Make payment |</a>
+            <a th:href="@{'/carts/deleteCart/' + ${cart.id}}" class="action-link"
                onclick="return confirm('Delete this cart?')">Delete</a>
         </td>
     </tr>
     </tbody>
 </table>
 
+<div id="back-container">
+    <a th:href="@{/home}">
+        <button id="btn-back">🔙 Back To Home</button>
+    </a>
+</div>
+
 <script>
-    // Increases or decreases the input number, but doesn't auto-update DB
+    // Increases or decreases the input number
     function changeQuantity(button, delta) {
         const input = button.parentNode.querySelector('input[name="quantity"]');
         let newValue = parseInt(input.value) + delta;
@@ -65,6 +143,6 @@
         input.value = newValue;
     }
 </script>
-<a th:href="@{/home}"><button>🔙 Back To Home</button></a>
+
 </body>
 </html>

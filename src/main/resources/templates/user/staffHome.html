@@ -12,9 +12,8 @@
     <h2 style="color:white">🍃 Staff Panel</h2>
     <a th:href="@{/home}" class="active">🏠 Trang chính</a>
     <a th:href="@{/users/listUsers}">👤 Quản lý người dùng</a>
-    <a th:href="@{/staff/orders}">📦 Quản lý đơn hàng</a>
+    <a th:href="@{/orders/listOrders}">📦 Quản lý đơn hàng</a>
     <a th:href="@{/staff/products}">🌸 Quản lý sản phẩm</a>
-    <a th:href="@{/staff/inventory}">📊 Tồn kho</a>
     <a th:href="@{/users/updatePage/{id}(id=${session.user.id})}">👤 Hồ sơ cá nhân</a>
     <a th:href="@{/logout}">🚪 Đăng xuất</a>
 </aside>
@@ -30,10 +29,6 @@
             <div class="card" style="flex: 1; text-align: center;">
                 <h3>Đơn hàng cần xử lý</h3>
                 <p th:text="${pendingOrders}">8</p>
-            </div>
-            <div class="card" style="flex: 1; text-align: center;">
-                <h3>Sản phẩm sắp hết hàng</h3>
-                <p th:text="${lowStockItems}">4</p>
             </div>
             <div class="card" style="flex: 1; text-align: center;">
                 <h3>Đơn hoàn thành hôm nay</h3>
@@ -53,7 +48,7 @@
                 <th>Hành động</th>
             </tr>
             </thead>
-            <tbody th:each="order : ${pendingOrderList}">
+            <tbody th:each="order : ${orders}">
             <tr>
                 <td th:text="${order.id}">#2025</td>
                 <td th:text="${order.customerName}">Lê Ngọc Anh</td>
@@ -62,30 +57,6 @@
                 <td th:text="${order.status}">Chờ giao</td>
                 <td>
                     <button th:onclick="'window.location.href=\'/staff/orders/' + ${order.id} + '\';'">Cập nhật</button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-
-        <h2 style="margin-top: 40px;">🌿 Sản phẩm tồn kho thấp</h2>
-        <table>
-            <thead>
-            <tr>
-                <th>Mã SP</th>
-                <th>Tên sản phẩm</th>
-                <th>Tồn kho</th>
-                <th>Trạng thái</th>
-                <th>Hành động</th>
-            </tr>
-            </thead>
-            <tbody th:each="product : ${lowStockList}">
-            <tr>
-                <td th:text="${product.id}">FL102</td>
-                <td th:text="${product.name}">Hoa hồng đỏ</td>
-                <td th:text="${product.stock}">5</td>
-                <td>Hết sớm</td>
-                <td>
-                    <button th:onclick="'window.location.href=\'/staff/products/update/' + ${product.id} + '\';'">Nhập thêm</button>
                 </td>
             </tr>
             </tbody>

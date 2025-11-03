@@ -3,36 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Category Page</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <title>Add New Category - Hoa Xanh Garden</title>
     <style>
-        .register-container label {
-            color: black;
+        body#category-page {
+            font-family: Arial, sans-serif;
+            background-color: #f0fff0; /* pale green background */
+            color: #006400; /* dark green text */
+            margin: 20px;
         }
 
-        .error {
+        .form-wrapper.register-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 2px solid #228B22;
+            border-radius: 10px;
+            background-color: #ffffff;
+        }
+
+        h2#category-title {
+            text-align: center;
+            color: #228B22; /* forest green */
+            margin-bottom: 20px;
+        }
+
+        label.form-label {
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            color: #006400;
+            font-weight: bold;
+        }
+
+        input.form-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #228B22;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        button.btn {
+            background-color: #228B22;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button.btn:hover {
+            background-color: #006400;
+        }
+
+        .error-message {
             color: red;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .back-container {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        a.back-link {
+            text-decoration: none;
+        }
+
+        a.back-link button {
+            background-color: #228B22;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        a.back-link button:hover {
+            background-color: #006400;
         }
     </style>
 </head>
-<body>
+<body id="category-page">
 
-<div class="register-container">
-    <h2>Add New Flower Category</h2>
-    <form th:action="@{/categories/createExecute}" th:object="${category}" method="post">
+<div class="form-wrapper register-container">
+    <h2 id="category-title">Add New Flower Category</h2>
 
-        <label for="categoryName">Category Name:</label>
-        <input type="text" id="categoryName" th:field="*{categoryName}" placeholder="Enter category name">
-        <div class="error" th:if="${#fields.hasErrors('categoryName')}" th:errors="*{categoryName}"></div>
+    <form id="category-form" th:action="@{/categories/createExecute}" th:object="${category}" method="post">
 
-        <label for="description">Description:</label>
-        <input type="text" id="description" th:field="*{description}" placeholder="Enter description">
-        <div class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+        <label for="categoryName" class="form-label">Category Name:</label>
+        <input type="text" id="categoryName" th:field="*{categoryName}" class="form-input" placeholder="Enter category name">
+        <div class="error-message" th:if="${#fields.hasErrors('categoryName')}" th:errors="*{categoryName}"></div>
 
-        <button type="submit">Add</button>
+        <label for="description" class="form-label">Description:</label>
+        <input type="text" id="description" th:field="*{description}" class="form-input" placeholder="Enter description">
+        <div class="error-message" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+
+        <button type="submit" class="btn" id="btn-add">Add</button>
     </form>
-    <a th:href="@{/categories/listCategory}"><button>🔙 Back To Category List</button></a>
-    <p class="error" th:if="${error}" th:text="${error}"></p>
+
+    <div class="back-container">
+        <a th:href="@{/categories/listCategory}" class="back-link">
+            <button id="btn-back">🔙 Back To Category List</button>
+        </a>
+    </div>
+
+    <p class="error-message global-error" th:if="${error}" th:text="${error}"></p>
 </div>
+
 </body>
 </html>
