@@ -10,8 +10,8 @@ import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<OrderEntity, Integer> {
-    List<OrderEntity>findOrdersByCustomer_fullNameContaining(String customer_fullName);
-    List<OrderEntity>findOrdersByEmployee_fullNameContaining(String employee_fullName);
+    List<OrderEntity>findOrdersByCustomer_fullNameContainingIgnoreCase(String customer_fullName);
+    List<OrderEntity>findOrdersByEmployee_fullNameContainingIgnoreCase(String employee_fullName);
     List<OrderEntity>findOrdersByOrderDateBetween(LocalDateTime startDate, LocalDateTime endDate);
     List<OrderEntity> findOrdersByPayments_status(String paymentsStatus);
 

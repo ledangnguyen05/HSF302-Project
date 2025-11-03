@@ -19,20 +19,25 @@ public class OrderDetailEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "OrderDetailID")
-    private int id;
+    private Integer id;
+
     @ManyToOne
     @JoinColumn(name = "OrderID", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private OrderEntity order;
+
     @ManyToOne
     @JoinColumn(name = "ProductID", nullable = false)
     private ProductEntity product;
-    @NotNull
-    @DecimalMin(value = "0.00", message = "Unit price must be positive")
-    @Column(name = "UnitPrice", precision = 10, scale = 2, nullable = false)
+
+    @Column(name = "UnitPrice",nullable = true)
     private BigDecimal unitPrice;
+
     @NotNull
     @Column(name = "Quantity", nullable = false)
-    private int quantity;
+    private Integer quantity = 1;
+
     @DecimalMin(value = "0.00", message = "Subtotal must be positive")
     @Column(name = "SubTotal", precision = 10, scale = 2, nullable = false)
     private BigDecimal subTotal;
@@ -40,8 +45,9 @@ public class OrderDetailEntity {
     @PrePersist
     @PreUpdate
     public void calculateSubTotal() {
-        if (unitPrice != null && quantity > 0) {
-            this.subTotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
+        if (quantity > 0 && product != null && product.getUnitPrice() != null) {
+            this.subTotal = product.getUnitPrice().multiply(BigDecimal.valueOf(quantity));
+            this.unitPrice = product.getUnitPrice();
         } else {
             this.subTotal = BigDecimal.ZERO;
         }

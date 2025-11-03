@@ -3,6 +3,7 @@ package hsf302.hsf302project.service;
 import hsf302.hsf302project.entity.OrderDetailEntity;
 import hsf302.hsf302project.entity.OrderEntity;
 import hsf302.hsf302project.repository.OrderRepository;
+import hsf302.hsf302project.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @Override
     public List<OrderEntity> findAll() {
@@ -31,26 +35,49 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public boolean create(OrderEntity order) {
         try {
-            order.setOrderDate(LocalDateTime.now());
-            order.setUpdatedAt(LocalDateTime.now());
-            order.setTotalAmount(BigDecimal.ZERO);
+            for (OrderDetailEntity detail : order.getOrderDetails()) {
+                var product = productRepository.findById(detail.getProduct().getId())
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
-            // Ensure all details are linked & subtotal calculated
-            if (order.getOrderDetails() != null && !order.getOrderDetails().isEmpty()) {
-                for (OrderDetailEntity detail : order.getOrderDetails()) {
-                    detail.setOrder(order);
-                    detail.calculateSubTotal();
-                    order.setTotalAmount(order.getTotalAmount().add(detail.getSubTotal()));
-                }
+                detail.setProduct(product);
+                detail.setUnitPrice(product.getUnitPrice());
+                detail.setOrder(order);
+                detail.calculateSubTotal();
+            }
+
+            BigDecimal total = order.getOrderDetails().stream()
+                    .map(OrderDetailEntity::getSubTotal)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            order.setTotalAmount(total);
+
+            // ✅ In ra thông tin đơn hàng sau khi lưu
+            System.out.println("=== ORDER SAVED SUCCESSFULLY ===");
+            System.out.println("Order ID: " + order.getOrderID());
+            System.out.println("Customer: " + order.getCustomer().getFullName());
+            System.out.println("Total Amount: " + order.getTotalAmount());
+            System.out.println("Status: " + order.getStatus());
+            System.out.println("Order Date: " + order.getOrderDate());
+            System.out.println("Notes: " + order.getNotes());
+            System.out.println("Order Details:");
+
+            for (OrderDetailEntity detail : order.getOrderDetails()) {
+                System.out.println("   Product ID: " + detail.getProduct().getId());
+                System.out.println("   Product Name: " + detail.getProduct().getProductName());
+                System.out.println("   Unit Price: " + detail.getProduct().getUnitPrice());
+                System.out.println("   Quantity: " + detail.getQuantity());
+                System.out.println("   Subtotal: " + detail.getSubTotal());
+                System.out.println("---------------------------");
             }
 
             orderRepository.save(order);
+
             return true;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
     }
+
 
     @Override
     @Transactional

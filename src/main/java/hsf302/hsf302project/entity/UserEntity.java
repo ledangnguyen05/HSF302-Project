@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
@@ -72,5 +73,11 @@ public class UserEntity {
 
     @ManyToOne
     @JoinColumn(name = "RoleID", nullable = false)
+    @ToString.Exclude
     private RoleEntity role;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    private List<CartEntity> carts;
+
 }
