@@ -23,7 +23,6 @@
 <main>
 <section class="products">
     <div class="product-card" th:each="product : ${products}">
-        <!-- Nếu chưa có hình, bạn có thể để ảnh mặc định -->
         <img th:src="@{'/images/' + ${product.imagePath}}" alt="Hoa">
 
         <h3 th:text="${product.productName}">Tên sản phẩm</h3>
@@ -39,6 +38,64 @@
 <footer>
     © 2025 Hoa Xanh Garden | Địa chỉ: 123 Hoa Hồng, TP.HCM | Điện thoại: 0909 123 456
 </footer>
+
+<script>
+    let currentProductId = null;
+
+    function showProductDetail(button) {
+        // Lấy thông tin sản phẩm từ data attributes
+        const productId = button.getAttribute('data-id');
+        const productName = button.getAttribute('data-name');
+        const productPrice = button.getAttribute('data-price');
+        const productStock = button.getAttribute('data-stock');
+        const productDescription = button.getAttribute('data-description');
+        const productImage = button.getAttribute('data-image');
+        const productCategory = button.getAttribute('data-category');
+        const productSupplier = button.getAttribute('data-supplier');
+
+        // Lưu ID sản phẩm hiện tại
+        currentProductId = productId;
+
+        // Cập nhật nội dung modal
+        document.getElementById('modalProductName').textContent = productName;
+        document.getElementById('modalProductPrice').textContent = productPrice + ' VNĐ';
+        document.getElementById('modalProductStock').textContent = productStock;
+        document.getElementById('modalProductCategory').textContent = productCategory || 'N/A';
+        document.getElementById('modalProductSupplier').textContent = productSupplier || 'N/A';
+        document.getElementById('modalProductDescription').textContent = productDescription || 'Không có mô tả';
+        document.getElementById('modalProductImage').src = '/images/' + productImage;
+
+        // Hiển thị modal
+        document.getElementById('productModal').style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('productModal').style.display = 'none';
+    }
+
+    function addToCart() {
+        if (currentProductId) {
+            // Redirect tới trang thêm vào giỏ hàng
+            window.location.href = '/carts/add/' + currentProductId;
+        }
+    }
+
+    // Đóng modal khi click vào nút X hoặc click ra ngoài modal
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('productModal');
+        const closeBtn = document.querySelector('.close');
+
+        closeBtn.onclick = function() {
+            closeModal();
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

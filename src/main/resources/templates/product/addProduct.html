@@ -54,6 +54,72 @@
             border-color: #4CAF50;
             box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
         }
+
+        /* Image Upload Styles */
+        .image-upload-container {
+            margin-top: 15px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            background-color: #fafafa;
+            transition: all 0.3s ease;
+        }
+        .image-upload-container:hover {
+            border-color: #4CAF50;
+            background-color: #f0f8f0;
+        }
+        .image-upload-container.dragover {
+            border-color: #4CAF50;
+            background-color: #e8f5e8;
+        }
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            width: 100%;
+        }
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .file-input-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 14px;
+        }
+        .file-input-button:hover {
+            background-color: #45a049;
+        }
+        .upload-text {
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+        .image-preview {
+            margin-top: 15px;
+            display: none;
+        }
+        .image-preview img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .file-name {
+            margin-top: 10px;
+            font-weight: 500;
+            color: #4CAF50;
+        }
+
         .error {
             color: #dc3545;
             font-size: 12px;
@@ -119,7 +185,7 @@
 
 <div class="register-container">
     <h2>➕ Add New Product</h2>
-    <form th:action="@{/products/add}" th:object="${productEntity}" method="post">
+    <form th:action="@{/products/add}" th:object="${productEntity}" method="post" enctype="multipart/form-data">
 
         <label for="productName">Product Name: <span style="color: red;">*</span></label>
         <input type="text" id="productName" th:field="*{productName}" placeholder="Enter product name" required>
@@ -136,6 +202,24 @@
         <label for="description">Description:</label>
         <input type="text" id="description" th:field="*{description}" placeholder="Enter description">
         <span class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+
+        <label for="imageFile">Product Image:</label>
+        <div class="image-upload-container" id="imageUploadContainer">
+            <div class="file-input-wrapper">
+                <input type="file" id="imageFile" name="imageFile" class="file-input" accept="image/*">
+                <div class="file-input-button">
+                    📁 Choose Image File
+                </div>
+            </div>
+            <div class="upload-text">
+                Or drag and drop an image file here<br>
+                <small>Supported formats: JPG, PNG, GIF (Max size: 5MB)</small>
+            </div>
+            <div class="file-name" id="fileName"></div>
+            <div class="image-preview" id="imagePreview">
+                <img id="previewImg" src="" alt="Preview">
+            </div>
+        </div>
 
         <label for="categoryId">Category: <span style="color: red;">*</span></label>
         <select id="categoryId" name="categoryId" required>
@@ -163,5 +247,66 @@
     <div th:if="${error}" class="message message-error" th:text="${error}"></div>
     <div th:if="${message}" class="message message-success" th:text="${message}"></div>
 </div>
+
+<script>
+    // Image upload functionality
+    const imageInput = document.getElementById('imageFile');
+    const uploadContainer = document.getElementById('imageUploadContainer');
+    const fileName = document.getElementById('fileName');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+
+    // Handle file selection
+    imageInput.addEventListener('change', function(e) {
+        handleFileSelect(e.target.files[0]);
+    });
+
+    // Handle drag and drop
+    uploadContainer.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadContainer.classList.add('dragover');
+    });
+
+    uploadContainer.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadContainer.classList.remove('dragover');
+    });
+
+    uploadContainer.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadContainer.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            imageInput.files = e.dataTransfer.files;
+            handleFileSelect(file);
+        }
+    });
+
+    function handleFileSelect(file) {
+        if (file) {
+            // Check file size (5MB limit)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size must be less than 5MB');
+                imageInput.value = '';
+                return;
+            }
+
+            // Display file name
+            fileName.textContent = '📄 ' + file.name;
+
+            // Display image preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                imagePreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            fileName.textContent = '';
+            imagePreview.style.display = 'none';
+        }
+    }
+</script>
+
 </body>
 </html>
