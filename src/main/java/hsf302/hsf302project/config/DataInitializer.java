@@ -151,23 +151,23 @@ public class DataInitializer implements CommandLineRunner {
 
         // Seed sample flower products per category & supplier (skip if already present by exact name)
         createProductIfAbsent("Red Rose Bouquet", new BigDecimal("19.99"), 50,
-                "Bouquet of 12 premium red roses", rosesCategory, gardenHouse);
+                "Bouquet of 12 premium red roses","Red_Rose_Bouquet.jpg", rosesCategory, gardenHouse);
 
         createProductIfAbsent("White Lily Bouquet", new BigDecimal("24.99"), 40,
-                "Elegant white lilies, perfect for celebrations", flowersCategory, sunnyFarms);
+                "Elegant white lilies, perfect for celebrations","White_Lily_Bouquet.jpg", flowersCategory, sunnyFarms);
 
         createProductIfAbsent("Pink Tulip Bundle", new BigDecimal("14.99"), 60,
-                "Bundle of 10 fresh pink tulips", tulipsCategory, sunnyFarms);
+                "Bundle of 10 fresh pink tulips","Pink_Tulip_Bundle.jpeg", tulipsCategory, sunnyFarms);
 
         createProductIfAbsent("Purple Orchid Pot", new BigDecimal("29.99"), 30,
-                "Potted purple orchid with long-lasting blooms", orchidsCategory, orchidWorld);
+                "Potted purple orchid with long-lasting blooms","Purple_Orchid_Pot.webp", orchidsCategory, orchidWorld);
 
         createProductIfAbsent("Sunflower Bunch", new BigDecimal("11.99"), 70,
-                "Bright sunflowers to light up any room", flowersCategory, defaultSupplier);
+                "Bright sunflowers to light up any room","Sunflower_Bunch.jpg", flowersCategory, defaultSupplier);
     }
 
     private void createProductIfAbsent(String name, BigDecimal price, int stock,
-                                       String description, CategoryEntity category,
+                                       String description,String image, CategoryEntity category,
                                        SupplierEntity supplier) {
         boolean exists = productRepository.findByProductNameContainingIgnoreCase(name)
                 .stream().anyMatch(p -> p.getProductName().equalsIgnoreCase(name));
@@ -177,6 +177,7 @@ public class DataInitializer implements CommandLineRunner {
                     .unitPrice(price)
                     .stockQuantity(stock)
                     .description(description)
+                    .imagePath(image)
                     .category(category)
                     .supplier(supplier)
                     .build());
