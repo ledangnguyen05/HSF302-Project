@@ -1,5 +1,6 @@
 package hsf302.hsf302project.controller;
 
+import hsf302.hsf302project.entity.RoleEntity;
 import hsf302.hsf302project.entity.UserEntity;
 import hsf302.hsf302project.repository.RoleRepository;
 import hsf302.hsf302project.repository.UserRepository;
@@ -68,6 +69,14 @@ public class UserController {
             model.addAttribute("roleList", roleRepository.findAll());
             return "user/register";
         }
+        UserEntity sessionUser = (UserEntity) session.getAttribute("user");
+
+        //Nếu là khách thì chỉ tao dc tai khoan role customer
+        if (sessionUser == null) {
+            RoleEntity customerRole = roleRepository.findByRoleName("CUSTOMER");
+            userEntity.setRole(customerRole);
+        }
+
         boolean success = userService.registerUser(userEntity);
         if (!success) {
             model.addAttribute("error", "Registration failed");
@@ -103,21 +112,33 @@ public class UserController {
             model.addAttribute("roleList", roleRepository.findAll());
             return "user/updateUser";
         }
-        if (userRepository.findByUsernameIgnoreCase(userEntity.getUsername()).isPresent()) {
-            model.addAttribute("error", "Username is already taken");
-            model.addAttribute("roleList", roleRepository.findAll());
-            return "user/updateUser";
+
+        userRepository.findByUsernameIgnoreCase(userEntity.getUsername())
+                .filter(u -> u.getId() != userEntity.getId())
+                .ifPresent(u -> {
+                    model.addAttribute("error", "Username is already taken");
+                    model.addAttribute("roleList", roleRepository.findAll());
+                });
+        if (model.containsAttribute("error")) return "user/updateUser";
+
+        userRepository.findByEmailIgnoreCase(userEntity.getEmail())
+                .filter(u -> u.getId() != userEntity.getId())
+                .ifPresent(u -> {
+                    model.addAttribute("error", "Email is already taken");
+                    model.addAttribute("roleList", roleRepository.findAll());
+                });
+        if (model.containsAttribute("error")) return "user/updateUser";
+
+        if (userEntity.getPhone() != null && !userEntity.getPhone().isBlank()) {
+            userRepository.findByPhone(userEntity.getPhone())
+                    .filter(u -> u.getId() != userEntity.getId())
+                    .ifPresent(u -> {
+                        model.addAttribute("error", "Phone is already taken");
+                        model.addAttribute("roleList", roleRepository.findAll());
+                    });
+            if (model.containsAttribute("error")) return "user/updateUser";
         }
-        if (userRepository.findByEmailIgnoreCase(userEntity.getEmail()).isPresent()) {
-            model.addAttribute("error", "Email is already taken");
-            model.addAttribute("roleList", roleRepository.findAll());
-            return "user/updateUser";
-        }
-        if (userRepository.findByPhone(userEntity.getPhone()).isPresent()) {
-            model.addAttribute("error", "Phone is already taken");
-            model.addAttribute("roleList", roleRepository.findAll());
-            return "user/updateUser";
-        }
+
         boolean success = userService.updateUser(userEntity.getId(), userEntity);
         if (!success) {
             model.addAttribute("error", "Update failed due to server error");

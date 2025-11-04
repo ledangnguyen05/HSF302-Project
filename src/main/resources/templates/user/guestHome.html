@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang Chủ - Cửa Hàng Hoa Tươi</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" th:href="@{/guest_styles.css}">
+
 </head>
 <body>
 
 <header>
-    <h1>🌿 Hoa Xanh Garden - Lan tỏa hương thiên nhiên 🌿</h1>
+    🌿 Hoa Xanh Garden - Lan tỏa hương thiên nhiên 🌿
 </header>
 
 <nav>
@@ -19,24 +20,20 @@
     <a th:href="@{/login}">Đăng nhập</a>
     <a th:href="@{/users/registerPage}">Đăng Ký</a>
 </nav>
-
-<section class="hero">
-    <h2>Hoa tươi cho mọi khoảnh khắc yêu thương 💐</h2>
-</section>
-
+<main>
 <section class="products">
     <div class="product-card" th:each="product : ${productList}">
         <img th:src="@{${product.imageUrl}}" alt="Hoa">
-        <h3 th:text="${product.name}">Hoa Hồng Đỏ</h3>
+        <h3 th:text="${product.name}">Tên sản phẩm</h3>
         <p th:text="${product.price + ' VNĐ'}">300,000 VNĐ</p>
         <button th:onclick="'window.location.href=\'/product/' + ${product.id} + '\';'">
             Xem chi tiết
         </button>
     </div>
 </section>
-
+</main>
 <footer>
-    <p>© 2025 Hoa Xanh Garden | Địa chỉ: 123 Hoa Hồng, TP.HCM | Điện thoại: 0909 123 456</p>
+    © 2025 Hoa Xanh Garden | Địa chỉ: 123 Hoa Hồng, TP.HCM | Điện thoại: 0909 123 456
 </footer>
 
 </body>

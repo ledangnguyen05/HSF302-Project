@@ -200,7 +200,14 @@
 
 <!-- User List Header -->
 <h1 id="page-title">User List</h1>
-
+<!-- ADMIN FUNCTION -->
+<div style="width:100%; display:flex; justify-content:center; margin-top:20px;"
+     th:if="${session.user.role.id==1}">
+    <button class="btn btn-secondary px-4 py-2"
+            onclick="window.location.href='/users/registerPage'">
+        ➕ Create Account
+    </button>
+</div>
 <!-- ADMIN TABLE -->
 <table id="admin-table" class="user-table" border="1" th:if="${session.user.role.id==1}">
     <thead>
@@ -228,7 +235,7 @@
         <td th:text="${user.email}"></td>
         <td th:text="${user.phone}"></td>
         <td th:text="${user.address}"></td>
-        <td th:text="${user.isActive}"></td>
+        <td th:text="${user.active}"></td>
         <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
         <td th:text="${#temporals.format(user.updatedAt, 'yyyy-MM-dd HH:mm')}"></td>
         <td th:text="${user.role.roleName}"></td>
@@ -271,7 +278,7 @@
         <td th:text="${user.email}"></td>
         <td th:text="${user.phone}"></td>
         <td th:text="${user.address}"></td>
-        <td th:text="${user.isActive}"></td>
+        <td th:text="${user.active}"></td>
         <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
         <td th:text="${#temporals.format(user.updatedAt, 'yyyy-MM-dd HH:mm')}"></td>
     </tr>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng ký - Hoa Xanh Garden</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" th:href="@{/admin_styles.css}">
     <style>
         body#register-page {
             font-family: "Segoe UI", Arial, sans-serif;
@@ -159,11 +159,14 @@
         <input type="text" id="address" th:field="*{address}" class="form-input" placeholder="Nhập địa chỉ">
         <div class="error" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
 
+        <div th:if="${session.user != null}">
         <label for="role" class="form-label">Vai trò:</label>
         <select id="role" th:field="*{role}" class="form-select" required>
             <option value="" disabled selected>-- Chọn vai trò --</option>
             <option th:each="role : ${roleList}" th:value="${role.id}" th:text="${role.roleName}"></option>
         </select>
+        </div>
+
         <div class="error" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></div>
 
         <div class="form-buttons">
@@ -172,9 +175,7 @@
     </form>
 
     <div class="back-buttons">
-        <a th:href="@{/guestHome}">
-            <button id="btn-back-guest" class="btn btn-back">🔙 Quay lại trang chủ</button>
-        </a>
+            <button onclick="history.back()" class="btn btn-back">🔙 Quay lại</button>
     </div>
 
     <p class="error global-error" th:if="${error}" th:text="${error}"></p>
