@@ -29,14 +29,59 @@
 
         <p th:text="${product.unitPrice + ' VNĐ'}">300,000 VNĐ</p>
 
-        <button th:onclick="'window.location.href=\'/product/' + ${product.id} + '\';'">
+        <button onclick="showProductDetail(this)"
+                th:data-id="${product.id}"
+                th:data-name="${product.productName}"
+                th:data-price="${product.unitPrice}"
+                th:data-stock="${product.stockQuantity}"
+                th:data-description="${product.description}"
+                th:data-image="${product.imagePath}"
+                th:data-category="${product.category?.categoryName}"
+                th:data-supplier="${product.supplier?.supplierName}">
             Xem chi tiết
         </button>
     </div>
 </section>
 </main>
+<!-- Modal hiển thị chi tiết sản phẩm -->
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="modal-header">
+            <h2 id="modalProductName">Tên sản phẩm</h2>
+        </div>
+        <div class="modal-body">
+            <div class="modal-image">
+                <img id="modalProductImage" src="" alt="Product Image">
+            </div>
+            <div class="modal-info">
+                <div class="info-item">
+                    <strong>Giá:</strong> <span id="modalProductPrice">0 VNĐ</span>
+                </div>
+                <div class="info-item">
+                    <strong>Số lượng trong kho:</strong> <span id="modalProductStock">0</span>
+                </div>
+                <div class="info-item">
+                    <strong>Danh mục:</strong> <span id="modalProductCategory">N/A</span>
+                </div>
+                <div class="info-item">
+                    <strong>Nhà cung cấp:</strong> <span id="modalProductSupplier">N/A</span>
+                </div>
+                <div class="info-item description">
+                    <strong>Mô tả:</strong>
+                    <p id="modalProductDescription">Không có mô tả</p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-add-to-cart" onclick="addToCart()">Thêm vào giỏ hàng</button>
+            <button class="btn-close" onclick="closeModal()">Đóng</button>
+        </div>
+    </div>
+</div>
+
 <footer>
-    © 2025 Hoa Xanh Garden | Địa chỉ: 123 Hoa Hồng, TP.HCM | Điện thoại: 0909 123 456
+    <p>© 2025 Hoa Xanh Garden | Địa chỉ: 123 Hoa Hồng, TP.HCM | Điện thoại: 0909 123 456</p>
 </footer>
 
 <script>
