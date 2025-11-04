@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -126,5 +127,42 @@ public class OrderServiceImpl implements OrderService {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public double getRevenueByDate(LocalDate date) {
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.atTime(23, 59, 59);
+        List<OrderEntity> orders = orderRepository.findByOrderDateBetweenAndStatus(start, end, OrderEntity.Status.FINISHED);
+
+        return orders.stream()
+                .mapToDouble(order -> order.getTotalAmount().doubleValue())
+                .sum();
+    }
+
+    @Override
+    public double getRevenueByMonth(int year, int month) {
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.atTime(23, 59, 59);
+        List<OrderEntity> orders = orderRepository.findByOrderDateBetweenAndStatus(start, end, OrderEntity.Status.FINISHED);
+
+        return orders.stream()
+                .mapToDouble(order -> order.getTotalAmount().doubleValue())
+                .sum();
+    }
+
+    @Override
+    public long countOrdersByStatus(OrderEntity.Status status) {
+        return orderRepository.countByStatus(status);
+    }
+
+    @Override
+    public List<OrderEntity> getFinishedOrdersByDate(LocalDate date) {
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.atTime(23, 59, 59);
+        return orderRepository.findByOrderDateBetweenAndStatus(start, end, OrderEntity.Status.FINISHED);
     }
 }
