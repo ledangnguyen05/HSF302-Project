@@ -22,10 +22,14 @@
 </nav>
 <main>
 <section class="products">
-    <div class="product-card" th:each="product : ${productList}">
-        <img th:src="@{${product.imageUrl}}" alt="Hoa">
-        <h3 th:text="${product.name}">Tên sản phẩm</h3>
-        <p th:text="${product.price + ' VNĐ'}">300,000 VNĐ</p>
+    <div class="product-card" th:each="product : ${products}">
+        <!-- Nếu chưa có hình, bạn có thể để ảnh mặc định -->
+        <img th:src="@{'/images/' + ${product.imagePath}}" alt="Hoa">
+
+        <h3 th:text="${product.productName}">Tên sản phẩm</h3>
+
+        <p th:text="${product.unitPrice + ' VNĐ'}">300,000 VNĐ</p>
+
         <button th:onclick="'window.location.href=\'/product/' + ${product.id} + '\';'">
             Xem chi tiết
         </button>
