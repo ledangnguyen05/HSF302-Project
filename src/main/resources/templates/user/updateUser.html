@@ -170,10 +170,10 @@
     </form>
 
     <div class="back-buttons">
-        <a th:if="${session.user.id==3}" th:href="@{/home}">
+        <a th:if="${session.user.role.id==3}" th:href="@{/home}">
             <button id="btn-back-customer" class="btn btn-back">🔙 Quay lại</button>
         </a>
-        <a th:if="${session.user.id==1}" th:href="@{/users/listUsers}">
+        <a th:if="${session.user.role.id==1}" th:href="@{/users/listUsers}">
             <button id="btn-back-admin" class="btn btn-back">🔙 Quay lại</button>
         </a>
     </div>
