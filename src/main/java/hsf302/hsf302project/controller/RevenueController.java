@@ -1,7 +1,10 @@
 package hsf302.hsf302project.controller;
 
 import hsf302.hsf302project.entity.OrderEntity;
+import hsf302.hsf302project.entity.UserEntity;
 import hsf302.hsf302project.service.OrderService;
+import hsf302.hsf302project.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,8 +21,14 @@ public class RevenueController {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/dashboard")
-    public String dashboard(Model model) {
+    public String dashboard(Model model, HttpSession session) {
+        UserEntity user = (UserEntity) session.getAttribute("user");
+        if(user == null || !userService.isAdmin(user))
+            return "redirect:/login";
         try {
             double todayRevenue = orderService.getRevenueByDate(LocalDate.now());
             double monthRevenue = orderService.getRevenueByMonth(
@@ -46,7 +55,10 @@ public class RevenueController {
     }
 
     @GetMapping("/daily")
-    public String dailyReport(@RequestParam(required = false) String date, Model model) {
+    public String dailyReport(@RequestParam(required = false) String date, Model model, HttpSession session) {
+        UserEntity user = (UserEntity) session.getAttribute("user");
+        if(user == null || !userService.isAdmin(user))
+            return "redirect:/login";
         try {
             LocalDate reportDate = date != null ? LocalDate.parse(date) : LocalDate.now();
 
@@ -69,7 +81,11 @@ public class RevenueController {
     @GetMapping("/monthly")
     public String monthlyReport(@RequestParam(required = false) Integer year,
                                 @RequestParam(required = false) Integer month,
-                                Model model) {
+                                Model model,
+                                HttpSession session) {
+        UserEntity user = (UserEntity) session.getAttribute("user");
+        if(user == null || !userService.isAdmin(user))
+            return "redirect:/login";
         try {
             if (year == null) year = LocalDate.now().getYear();
             if (month == null) month = LocalDate.now().getMonthValue();

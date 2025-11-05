@@ -14,4 +14,5 @@ public interface UserService {
     List<UserEntity >findByEmail(String email);
     UserEntity findByUserId(Integer userId);
     UserEntity findByPhone(String phone);
+    public boolean isAdmin(UserEntity user);
 }
