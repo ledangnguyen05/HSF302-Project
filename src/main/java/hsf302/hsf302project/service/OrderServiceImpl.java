@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -133,11 +134,17 @@ public class OrderServiceImpl implements OrderService {
     public double getRevenueByDate(LocalDate date) {
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.atTime(23, 59, 59);
+
         List<OrderEntity> orders = orderRepository.findByOrderDateBetweenAndStatus(start, end, OrderEntity.Status.FINISHED);
 
-        return orders.stream()
-                .mapToDouble(order -> order.getTotalAmount().doubleValue())
-                .sum();
+        if (orders == null || orders.isEmpty())
+            return 0.0;
+
+        double totalRevenue = 0.0;
+        for (OrderEntity order : orders)
+            totalRevenue += order.getTotalAmount().doubleValue();
+
+        return totalRevenue;
     }
 
     @Override
@@ -147,11 +154,17 @@ public class OrderServiceImpl implements OrderService {
 
         LocalDateTime start = startDate.atStartOfDay();
         LocalDateTime end = endDate.atTime(23, 59, 59);
+
         List<OrderEntity> orders = orderRepository.findByOrderDateBetweenAndStatus(start, end, OrderEntity.Status.FINISHED);
 
-        return orders.stream()
-                .mapToDouble(order -> order.getTotalAmount().doubleValue())
-                .sum();
+        if (orders == null || orders.isEmpty())
+            return 0.0;
+
+        double totalRevenue = 0.0;
+        for (OrderEntity order : orders)
+            totalRevenue += order.getTotalAmount().doubleValue();
+
+        return totalRevenue;
     }
 
     @Override
@@ -163,6 +176,12 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderEntity> getFinishedOrdersByDate(LocalDate date) {
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.atTime(23, 59, 59);
-        return orderRepository.findByOrderDateBetweenAndStatus(start, end, OrderEntity.Status.FINISHED);
+
+        List<OrderEntity> orders = orderRepository.findByOrderDateBetweenAndStatus(start, end, OrderEntity.Status.FINISHED);
+
+        if (orders == null)
+            return new ArrayList<>();
+
+        return orders;
     }
 }

@@ -1,10 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Revenue Report</title>
+    <link rel="stylesheet" th:href="@{/revenue_style.css}">
 </head>
 <body>
+    <div class="revenue-container">
+        <h1>📈 Monthly Revenue Report</h1>
 
+        <div class="revenue-header-actions">
+            <div class="revenue-nav-buttons">
+                <a th:href="@{/revenue/dashboard}"><button class="revenue-button">📊 Dashboard</button></a>
+                <a th:href="@{/revenue/daily}"><button class="revenue-button">📅 Daily Report</button></a>
+            </div>
+            <a th:href="@{/home}"><button class="revenue-button revenue-back-button">🔙 Back To Home</button></a>
+        </div>
+
+        <div class="revenueMonthly-filter">
+            <form th:action="@{/revenue/monthly}" method="get">
+                <label for="year">Year:</label>
+                <select id="year" name="year">
+                    <option th:each="i : ${#numbers.sequence(2023, 2030)}"
+                            th:value="${i}"
+                            th:text="${i}"
+                            th:selected="${i == year}"></option>
+                </select>
+
+                <label for="month">Month:</label>
+                <select id="month" name="month">
+                    <option th:each="i : ${#numbers.sequence(1, 12)}"
+                            th:value="${i}"
+                            th:text="${#temporals.format(#temporals.create(year, i, 1), 'MMMM')}"
+                            th:selected="${i == month}"></option>
+                </select>
+
+                <button class="revenue-button" type="submit">View Report</button>
+            </form>
+        </div>
+
+        <div class="revenueMonthly-summary">
+            <h2>Revenue for <span th:text="${#temporals.format(#temporals.create(year, month, 1), 'MMMM yyyy')}"></span></h2>
+            <p class="value" th:text="${#numbers.formatDecimal(revenue, 0, 'COMMA', 2, 'POINT') + ' ₫'}"></p>
+        </div>
+
+        <div class="revenue-info-box">
+            <p>💡 <strong>Monthly Overview:</strong> This report shows the total revenue generated from all completed orders during the selected month.</p>
+            <p>📊 <strong>Next Steps:</strong> Use the Daily Report to analyze revenue patterns day by day.</p>
+        </div>
+    </div>
 </body>
 </html>
