@@ -25,7 +25,7 @@ public class HomeController {
     }
 
     @GetMapping("/home")
-    public String homePage(HttpSession session) {
+    public String homePage(HttpSession session, Model model) {
         UserEntity userEntity=(UserEntity) session.getAttribute("user");
         if(userEntity==null){
             return "redirect:/login";
@@ -33,6 +33,8 @@ public class HomeController {
             if(userEntity.getRole().getRoleName().equals("ADMIN")){
                 return "user/adminHome";
             }else if(userEntity.getRole().getRoleName().equals("CUSTOMER")){
+                List<ProductEntity> products = productService.getAllProducts();
+                model.addAttribute("products", products);
                 return "user/customerHome";
             }else if(userEntity.getRole().getRoleName().equals("STAFF")){
                 return "user/staffHome";
