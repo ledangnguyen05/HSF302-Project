@@ -1,191 +1,184 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cập Nhật Người Dùng - Hoa Xanh Garden</title>
+    <title>Edit User Page</title>
     <link rel="stylesheet" th:href="@{/admin_styles.css}">
     <style>
-        body#update-page {
-            font-family: "Segoe UI", Arial, sans-serif;
-            background: #f1f8f4;
-            color: #2e7d32;
-            margin: 0;
-            padding: 0;
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
         }
 
-        .update-container {
-            background: white;
-            width: 90%;
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 25px 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        .container-form {
+            background-color: #fff !important;
+            max-width: 700px !important;
+            width: 700px !important;
+            margin: 30px auto !important;
+            padding: 30px 40px !important;
+            border-radius: 10px !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
         }
 
-        #update-title {
+        h2 {
             text-align: center;
-            color: #1b5e20;
+            color: #2c3e50;
             margin-bottom: 25px;
-            font-size: 26px;
         }
 
-        .form-body {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
+        label {
+            font-weight: 500;
+            margin-top: 15px;
+            display: block;
         }
 
-        .form-label {
-            font-weight: bold;
-            color: #2e7d32;
+        input[type="text"], input[type="email"], select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            margin-top: 5px;
+            transition: border-color 0.3s;
         }
 
-        .form-input, .form-select {
-            padding: 10px 12px;
-            border: 1px solid #a5d6a7;
-            border-radius: 8px;
-            font-size: 15px;
+        input[type="text"]:focus, input[type="email"]:focus, select:focus {
             outline: none;
-            transition: 0.3s;
+            border-color: #4caf50;
+            box-shadow: 0 0 5px rgba(76,175,80,0.3);
         }
 
-        .form-input:focus, .form-select:focus {
-            border-color: #43a047;
-            box-shadow: 0 0 4px #a5d6a7;
-        }
-
-        .readonly {
-            background: #f0f0f0;
+        input[readonly] {
+            background-color: #f0f0f0;
             cursor: not-allowed;
         }
 
-        .btn {
-            padding: 10px 16px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: bold;
-            transition: 0.25s;
-        }
-
-        .btn-primary {
-            background-color: #43a047;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #2e7d32;
-        }
-
-        .btn-back {
-            background-color: #81c784;
-            color: white;
-        }
-
-        .btn-back:hover {
-            background-color: #4caf50;
-        }
-
-        .form-buttons, .back-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
+        select:disabled {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
         }
 
         .error {
-            color: #d32f2f;
-            font-size: 13px;
-            margin-top: -6px;
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
         }
 
-        .global-error {
-            text-align: center;
+        button[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            background-color: #007bff;
+            color: white;
             margin-top: 20px;
-            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
         }
 
-        /* Responsive */
-        @media (max-width: 600px) {
-            .update-container {
-                padding: 20px;
-            }
-            .form-input, .form-select {
-                font-size: 14px;
-            }
-            .btn {
-                font-size: 14px;
-                padding: 9px 14px;
-            }
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .back-button {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            background-color: #17a2b8;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #138496;
+        }
+
+        .message {
+            text-align: center;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+
+        .message-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
     </style>
+
 </head>
-<body id="update-page">
+<body>
 
-<div class="form-wrapper update-container">
-    <h2 id="update-title">Cập nhật tài khoản</h2>
+<div class="container-form">
+    <h2>✏️ Edit User</h2>
+    <form th:action="@{/users/updateExecute}" th:object="${user}" method="post">
+        <input type="hidden" th:field="*{id}"/>
 
-    <form id="update-form" th:action="@{/users/updateExecute}" th:object="${user}" method="post" class="form-body">
+        <label>User ID</label>
+        <input type="text" th:field="*{id}" readonly>
 
-        <label for="id" class="form-label">ID người dùng:</label>
-        <input type="text" id="id" th:field="*{id}" class="form-input readonly" readonly>
+        <label>Username *</label>
+        <input type="text" th:field="*{username}" placeholder="Enter username" required>
+        <span class="error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
 
-        <label for="username" class="form-label">Tên đăng nhập:</label>
-        <input type="text" id="username" th:field="*{username}" class="form-input" placeholder="Nhập username">
-        <div class="error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+        <label>Password *</label>
+        <input type="text" th:field="*{password}" placeholder="Enter password" required>
+        <span class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
 
-        <label for="password" class="form-label">Mật khẩu:</label>
-        <input type="text" id="password" th:field="*{password}" class="form-input" placeholder="Nhập mật khẩu">
-        <div class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+        <label>Full Name *</label>
+        <input type="text" th:field="*{fullName}" placeholder="Enter full name" required>
+        <span class="error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></span>
 
-        <label for="fullName" class="form-label">Họ và tên:</label>
-        <input type="text" id="fullName" th:field="*{fullName}" class="form-input" placeholder="Nhập họ và tên">
-        <div class="error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+        <label>Email *</label>
+        <input type="email" th:field="*{email}" placeholder="Enter email" required>
+        <span class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
 
-        <label for="email" class="form-label">Email:</label>
-        <input type="email" id="email" th:field="*{email}" class="form-input" placeholder="Nhập email">
-        <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+        <label>Phone *</label>
+        <input type="text" th:field="*{phone}" placeholder="Enter phone" required>
+        <span class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
 
-        <label for="phone" class="form-label">Số điện thoại:</label>
-        <input type="text" id="phone" th:field="*{phone}" class="form-input" placeholder="Nhập số điện thoại">
-        <div class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+        <label>Address *</label>
+        <input type="text" th:field="*{address}" placeholder="Enter address" required>
+        <span class="error" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></span>
 
-        <label for="address" class="form-label">Địa chỉ:</label>
-        <input type="text" id="address" th:field="*{address}" class="form-input" placeholder="Nhập địa chỉ">
-        <div class="error" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
-
-        <label for="status" class="form-label">Trạng thái:</label>
-        <select id="status" th:field="*{active}" class="form-select" required
-                th:disabled="${session.user.role.id !=1}">
-            <option th:value="true">Hoạt động</option>
-            <option th:value="false">Vô hiệu hóa</option>
+        <label>Status *</label>
+        <select th:field="*{active}" required th:disabled="${session.user.role.id != 1}">
+            <option th:value="true">Active</option>
+            <option th:value="false">Inactive</option>
         </select>
+        <span class="error" th:if="${#fields.hasErrors('active')}" th:errors="*{active}"></span>
 
-        <label for="role" class="form-label">Vai trò:</label>
-        <select id="role" th:field="*{role}" class="form-select" required
-                th:disabled="${session.user.role.id != 1}">
-            <option value="" disabled>-- Chọn vai trò --</option>
+        <label>Role *</label>
+        <select th:field="*{role}" required th:disabled="${session.user.role.id != 1}">
+            <option value="" disabled>-- Select Role --</option>
             <option th:each="r : ${roleList}"
                     th:value="${r.id}"
                     th:text="${r.roleName}"
                     th:selected="${user.role != null and r.id == user.role.id}">
             </option>
         </select>
-        <div class="error" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></div>
+        <span class="error" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></span>
 
-        <div class="form-buttons">
-            <button type="submit" id="btn-update" class="btn btn-primary">Cập nhật</button>
-        </div>
+        <button type="submit">Update User</button>
     </form>
 
-    <div class="back-buttons">
-        <button onclick="history.back()" class="btn btn-back">🔙 Quay lại</button>
-    </div>
+    <a href="javascript:history.back()" class="back-button">🔙 Back</a>
 
-    <p class="error global-error" th:if="${error}" th:text="${error}"></p>
+    <div th:if="${error}" class="message message-error" th:text="${error}"></div>
+    <div th:if="${message}" class="message message-success" th:text="${message}"></div>
 </div>
 
 </body>

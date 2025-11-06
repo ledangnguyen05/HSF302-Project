@@ -1,151 +1,209 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supplier Management - Hoa Xanh Garden</title>
+    <title>Supplier Management</title>
+    <link rel="stylesheet" th:href="@{/admin_styles.css}">
     <style>
-        body#supplier-list-page {
+        body {
             font-family: Arial, sans-serif;
-            background-color: #f0fff0; /* pale green */
-            color: #006400; /* dark green text */
-            padding: 30px;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            border: 1px solid #228B22;
-            border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            background-color: #f5f5f5;
         }
-
-        h1#supplier-list-title {
-            color: #228B22;
-            text-align: center;
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
             margin-bottom: 20px;
+            text-align: center;
         }
-
-        form#search-form {
+        .header-actions {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            justify-content: space-between;
             align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
-
-        select#searchType, input#keyword, input#searchBtn {
-            padding: 6px 10px;
-            border-radius: 5px;
-            border: 1px solid #228B22;
-        }
-
-        input#searchBtn {
-            background-color: #228B22;
+        button {
+            background-color: #4CAF50;
             color: white;
+            padding: 10px 20px;
             border: none;
+            border-radius: 5px;
             cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
         }
-
-        input#searchBtn:hover {
-            background-color: #006400;
+        button:hover {
+            background-color: #45a049;
         }
-
-        table#supplierTable {
+        .back-button {
+            background-color: #17a2b8;
+            margin-top: 20px;
+        }
+        .back-button:hover {
+            background-color: #138496;
+        }
+        table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-top: 20px;
+            background-color: white;
         }
-
-        table#supplierTable th, table#supplierTable td {
-            border: 1px solid #228B22;
-            padding: 8px;
+        th {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .action-buttons button {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+        }
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+        .update-btn {
+            background-color: #007bff;
+        }
+        .update-btn:hover {
+            background-color: #0056b3;
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
             text-align: center;
         }
-
-        table#supplierTable th {
-            background-color: #228B22;
-            color: white;
+        .message-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
-
-        button.btn {
-            padding: 6px 12px;
+        .message-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .filter-section {
+            padding: 20px;
+            background-color: #f8f9fa;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .filter-section form {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .filter-section label {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+        .filter-section select,
+        .filter-section input {
+            padding: 10px 15px;
+            border: 2px solid #4CAF50;
             border-radius: 5px;
-            border: none;
-            background-color: #228B22;
-            color: white;
+            font-size: 14px;
+            background-color: white;
             cursor: pointer;
-            margin: 2px;
+            min-width: 200px;
         }
-
-        button.btn:hover {
-            background-color: #006400;
-        }
-
-        .error {
-            color: red;
-            font-size: 0.9em;
-            margin-bottom: 10px;
-        }
-
-        .message {
-            color: green;
-            font-size: 0.9em;
-            margin-bottom: 10px;
-        }
-
-        a.back-link {
-            text-decoration: none;
+        .filter-section input {
+            min-width: 300px;
         }
     </style>
 </head>
-<body id="supplier-list-page">
-<div class="container" id="supplier-container">
-    <h1 id="supplier-list-title">Supplier List</h1>
-
-    <form id="search-form" th:action="@{/suppliers/search}" method="post">
-        <select id="searchType" name="searchType">
-            <option value="bySupplierName" th:selected="${searchType=='bySupplierName'}">Search by Supplier Name</option>
-            <option value="byContactName" th:selected="${searchType=='byContactName'}">Search by Contact Name</option>
-            <option value="byPhone" th:selected="${searchType=='byPhone'}">Search by Phone</option>
-        </select>
-        <input type="text" id="keyword" name="keyword" th:value="${param.keyword!=null?param.keyword:''}" placeholder="Enter what you want to search" required>
-        <input type="submit" id="searchBtn" value="Search">
-    </form>
-
-    <a th:href="@{/suppliers/addPage}" class="back-link"><button class="btn">+ Add new supplier</button></a>
-
-    <p class="error" th:if="${error}" th:text="${error}"></p>
-    <p class="message" th:if="${message}" th:text="${message}"></p>
-
-    <table id="supplierTable">
+<body>
+<div class="container">
+    <h1>🏢 Supplier Management</h1>
+    
+    <div class="header-actions">
+        <a th:href="@{/suppliers/addPage}"><button>➕ Add New Supplier</button></a>
+        <a th:href="@{/home}"><button class="back-button">🔙 Back To Home</button></a>
+    </div>
+    
+    <div th:if="${message}" class="message message-success" th:text="${message}"></div>
+    <div th:if="${error}" class="message message-error" th:text="${error}"></div>
+    
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <form method="post" th:action="@{/suppliers/search}">
+            <label for="searchType">🔍 Filter by:</label>
+            <select id="searchType" name="searchType">
+                <option value="bySupplierName" th:selected="${searchType=='bySupplierName'}">Search by Supplier Name</option>
+                <option value="byContactName" th:selected="${searchType=='byContactName'}">Search by Contact Name</option>
+                <option value="byPhone" th:selected="${searchType=='byPhone'}">Search by Phone</option>
+            </select>
+            <input type="text" id="keyword" name="keyword" placeholder="Enter what you want to search"
+                   th:value="${param.keyword!=null?param.keyword:''}" required>
+            <button type="submit">Search</button>
+            <a th:href="@{/suppliers/listSuppliers}" style="text-decoration: none;">
+                <button type="button" style="background-color: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; padding: 10px 20px;">Clear Filter</button>
+            </a>
+        </form>
+    </div>
+    
+    <table>
         <thead>
-        <tr>
-            <th>ID</th>
-            <th>Supplier Name</th>
-            <th>Contact Name</th>
-            <th>Phone</th>
-            <th>Address</th>
-            <th>Action</th>
-        </tr>
+            <tr>
+                <th>ID</th>
+                <th>Supplier Name</th>
+                <th>Contact Name</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Action</th>
+            </tr>
         </thead>
         <tbody>
-        <tr th:each="supplier : ${suppliers}">
-            <td th:text="${supplier.id}"></td>
-            <td th:text="${supplier.supplierName}"></td>
-            <td th:text="${supplier.contactName}"></td>
-            <td th:text="${supplier.phone}"></td>
-            <td th:text="${supplier.address}"></td>
-            <td>
-                <a th:href="@{/suppliers/deleteSupplier/{id}(id=${supplier.id})}" onclick="return confirm('Are you sure to delete?')"><button class="btn">Delete</button></a>
-                <a th:href="@{/suppliers/updatePage/{id}(id=${supplier.id})}"><button class="btn">Update</button></a>
-            </td>
-        </tr>
+            <tr th:each="supplier : ${suppliers}">
+                <td th:text="${supplier.id}"></td>
+                <td th:text="${supplier.supplierName}"></td>
+                <td th:text="${supplier.contactName}"></td>
+                <td th:text="${supplier.phone}"></td>
+                <td th:text="${supplier.address}"></td>
+                <td>
+                    <div class="action-buttons">
+                        <a th:href="@{/suppliers/deleteSupplier/{id}(id=${supplier.id})}" onclick="return confirm('Are you sure to delete?')">
+                            <button class="delete-btn">Delete</button>
+                        </a>
+                        <a th:href="@{/suppliers/updatePage/{id}(id=${supplier.id})}">
+                            <button class="update-btn">Edit</button>
+                        </a>
+                    </div>
+                </td>
+            </tr>
         </tbody>
     </table>
-
-    <a th:href="@{/home}" class="back-link"><button class="btn">🔙 Back To Home</button></a>
 </div>
 </body>
 </html>
