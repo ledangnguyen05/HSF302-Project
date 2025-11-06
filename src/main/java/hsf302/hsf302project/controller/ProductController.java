@@ -19,10 +19,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/products")
@@ -38,10 +45,18 @@ public class ProductController {
     private SupplierService supplierService;
 
     @GetMapping("/ListProducts")
-    public ModelAndView listProducts() {
-        List<ProductEntity> prodList = productService.getAllProducts();
+    public ModelAndView listProducts(@RequestParam(required = false) Integer categoryId) {
+        List<ProductEntity> prodList;
+        if (categoryId != null && categoryId > 0) {
+            prodList = productService.findByCategoryId(categoryId);
+        } else {
+            prodList = productService.getAllProducts();
+        }
+        List<CategoryEntity> categories = categoryService.findAllCategories();
         ModelAndView mav = new ModelAndView();
         mav.addObject("products", prodList);
+        mav.addObject("categories", categories);
+        mav.addObject("selectedCategoryId", categoryId != null ? categoryId : 0);
         mav.setViewName("product/productList");
         return mav;
     }
@@ -58,30 +73,61 @@ public class ProductController {
     }
 
     @PostMapping("/add")
-    public String addProduct(@Valid @ModelAttribute("productEntity") ProductEntity productEntity, 
-                            BindingResult bindingResult, 
-                            Model model, 
-                            @RequestParam int categoryId,
-                            @RequestParam int supplierId,
-                            HttpSession session) {
+    public String addProduct(@Valid @ModelAttribute("productEntity") ProductEntity productEntity,
+                             BindingResult bindingResult,
+                             @RequestParam("imageFile") MultipartFile imageFile,
+                             @RequestParam int categoryId,
+                             @RequestParam int supplierId,
+                             Model model) {
+
         if (bindingResult.hasErrors()) {
-            List<CategoryEntity> cateList = categoryService.findAllCategories();
-            model.addAttribute("productEntity", productEntity);
-            model.addAttribute("categories", cateList);
+            model.addAttribute("categories", categoryService.findAllCategories());
             model.addAttribute("suppliers", supplierService.getAll());
             return "product/addProduct";
         }
-        CategoryEntity categoryEntity = categoryService.findByCategoryId(categoryId);
-        SupplierEntity supplierEntity = supplierService.findById(supplierId);
-        productEntity.setCategory(categoryEntity);
-        productEntity.setSupplier(supplierEntity);
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                String uploadDir = "C:/FlowerImg/";
+                File uploadDirFile = new File(uploadDir);
+                if (!uploadDirFile.exists()) {
+                    uploadDirFile.mkdirs();
+                }
+
+                String originalFilename = imageFile.getOriginalFilename();
+                String extension = "";
+                if (originalFilename != null && originalFilename.contains(".")) {
+                    extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+                }
+
+                String uniqueFilename = UUID.randomUUID().toString() + extension;
+                Path filePath = Paths.get(uploadDir + uniqueFilename);
+
+                Files.write(filePath, imageFile.getBytes());
+
+                productEntity.setImagePath(uniqueFilename);
+
+            } catch (IOException e) {
+                model.addAttribute("error", "Failed to upload image: " + e.getMessage());
+                model.addAttribute("categories", categoryService.findAllCategories());
+                model.addAttribute("suppliers", supplierService.getAll());
+                return "product/addProduct";
+            }
+        }
+
+
+        productEntity.setCategory(categoryService.findByCategoryId(categoryId));
+        productEntity.setSupplier(supplierService.findById(supplierId));
+
         productService.addProd(productEntity);
+
         return "redirect:/products/ListProducts";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteProduct(@PathVariable int id, HttpSession session, RedirectAttributes redirectAttributes) {
         productService.deleteProd(id);
+        redirectAttributes.addFlashAttribute("message", "Product added successfully");
         redirectAttributes.addFlashAttribute("message", "Product deleted successfully");
         return "redirect:/products/ListProducts";
     }
@@ -103,12 +149,14 @@ public class ProductController {
 
     @PostMapping("/edit")
     public String editProduct(@Valid @ModelAttribute("productEntity") ProductEntity productEntity,
-                             BindingResult bindingResult,
-                             Model model,
-                             @RequestParam("categoryId") int categoryId,
-                             @RequestParam("supplierId") int supplierId,
-                             HttpSession session,
-                             RedirectAttributes redirectAttributes) {
+                              BindingResult bindingResult,
+                              Model model,
+                              @RequestParam("categoryId") int categoryId,
+                              @RequestParam("supplierId") int supplierId,
+                              @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
+                              HttpSession session,
+                              RedirectAttributes redirectAttributes) {
+
         if (bindingResult.hasErrors()) {
             List<CategoryEntity> cateList = categoryService.findAllCategories();
             model.addAttribute("productEntity", productEntity);
@@ -116,10 +164,55 @@ public class ProductController {
             model.addAttribute("suppliers", supplierService.getAll());
             return "product/editProduct";
         }
+
+        // Lấy product hiện tại từ database để giữ lại thông tin cũ (như imagePath)
+        ProductEntity existingProduct = productService.findById(productEntity.getId());
+        if (existingProduct == null) {
+            redirectAttributes.addFlashAttribute("error", "Product not found");
+            return "redirect:/products/ListProducts";
+        }
+
+        // Gán category & supplier
         CategoryEntity categoryEntity = categoryService.findByCategoryId(categoryId);
         SupplierEntity supplierEntity = supplierService.findById(supplierId);
         productEntity.setCategory(categoryEntity);
         productEntity.setSupplier(supplierEntity);
+
+        // Xử lý upload ảnh: chỉ cập nhật nếu có ảnh mới, nếu không thì giữ lại ảnh hiện tại
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                String uploadDir = "C:/FlowerImg/";
+                File uploadDirFile = new File(uploadDir);
+                if (!uploadDirFile.exists()) {
+                    uploadDirFile.mkdirs();
+                }
+
+                String originalFilename = imageFile.getOriginalFilename();
+                String fileExtension = "";
+                if (originalFilename != null && originalFilename.contains(".")) {
+                    fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+                }
+                String uniqueFilename = UUID.randomUUID().toString() + fileExtension;
+
+                Path filePath = Paths.get(uploadDir + uniqueFilename);
+                Files.write(filePath, imageFile.getBytes());
+
+                // Cập nhật đường dẫn ảnh mới trong entity
+                productEntity.setImagePath(uniqueFilename);
+
+            } catch (IOException e) {
+                redirectAttributes.addFlashAttribute("error", "Failed to upload image: " + e.getMessage());
+                List<CategoryEntity> cateList = categoryService.findAllCategories();
+                model.addAttribute("productEntity", productEntity);
+                model.addAttribute("categories", cateList);
+                model.addAttribute("suppliers", supplierService.getAll());
+                return "product/editProduct";
+            }
+        } else {
+            // Nếu không có ảnh mới, giữ lại ảnh hiện tại
+            productEntity.setImagePath(existingProduct.getImagePath());
+        }
+
         boolean updated = productService.updateProd(productEntity.getId(), productEntity);
         if (updated) {
             redirectAttributes.addFlashAttribute("message", "Product updated successfully");
@@ -129,5 +222,3 @@ public class ProductController {
         return "redirect:/products/ListProducts";
     }
 }
-
-

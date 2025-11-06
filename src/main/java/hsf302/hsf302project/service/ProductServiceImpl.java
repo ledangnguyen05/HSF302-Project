@@ -20,6 +20,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<ProductEntity> findByCategoryId(int categoryId) {
+        return productRepository.findByCategoryId(categoryId);
+    }
+
+    @Override
     public List<ProductEntity> findByProdName(String prodName) {
         return productRepository.findByProductNameContainingIgnoreCase(prodName);
     }
@@ -49,6 +54,7 @@ public class ProductServiceImpl implements ProductService {
             existedProduct.setDescription(product.getDescription());
             existedProduct.setCategory(product.getCategory());
             existedProduct.setSupplier(product.getSupplier());
+            existedProduct.setImagePath(product.getImagePath());
             productRepository.save(existedProduct);
             return true;
         }

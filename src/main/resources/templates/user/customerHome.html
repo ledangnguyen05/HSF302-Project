@@ -21,23 +21,180 @@
         <div><a th:href="@{/logout}">Đăng xuất</a></div>
 </nav>
 <main>
+<!-- Filter Section -->
+<div class="filter-section" style="max-width: 1400px; margin: 30px auto; padding: 0 40px;">
+    <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 16px; padding: 25px 30px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.3);">
+        <div style="margin-bottom: 20px;">
+            <h3 style="color: #2E8B57; font-size: 20px; margin: 0; font-weight: bold; text-align: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">🔍 Lọc theo danh mục</h3>
+        </div>
+        <div class="category-filter-container" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center;">
+            <!-- Nút "Tất cả" -->
+            <a th:href="@{/home}" 
+               class="category-filter-btn"
+               th:classappend="${selectedCategoryId == 0} ? 'active' : ''"
+               style="display: inline-block; padding: 10px 20px; background: rgba(255, 255, 255, 0.9); color: #2E8B57; border: 2px solid rgba(76, 175, 80, 0.5); border-radius: 20px; text-decoration: none; font-weight: 600; font-size: 14px; transition: all 0.3s ease; cursor: pointer; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2); backdrop-filter: blur(5px);">
+                🌸 Tất cả
+            </a>
+            
+            <!-- Các category buttons -->
+            <a th:each="category : ${categories}"
+               th:href="@{'/home?categoryId=' + ${category.id}}"
+               class="category-filter-btn"
+               th:classappend="${selectedCategoryId == category.id} ? 'active' : ''"
+               style="display: inline-block; padding: 10px 20px; background: rgba(255, 255, 255, 0.9); color: #2E8B57; border: 2px solid rgba(76, 175, 80, 0.5); border-radius: 20px; text-decoration: none; font-weight: 600; font-size: 14px; transition: all 0.3s ease; cursor: pointer; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2); backdrop-filter: blur(5px);">
+                <span th:text="${category.categoryName}"></span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.category-filter-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.category-filter-btn:hover {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(46, 139, 87, 0.2)) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3) !important;
+    border-color: rgba(76, 175, 80, 0.8) !important;
+}
+
+.category-filter-btn.active {
+    background: linear-gradient(135deg, #4CAF50, #45a049) !important;
+    color: white !important;
+    border-color: #4CAF50 !important;
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4) !important;
+    transform: translateY(-2px);
+}
+
+.category-filter-btn.active:hover {
+    background: linear-gradient(135deg, #45a049, #3a8b42) !important;
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5) !important;
+}
+</style>
 <section class="products">
-<!--    <div class="product-card" th:each="product : ${productList}">-->
-<!--        <img th:src="@{${product.imageUrl}}" alt="Hoa">-->
-<!--        <h3 th:text="${product.name}">Hoa Hồng Đỏ</h3>-->
-<!--        <p th:text="${product.price + ' VNĐ'}">300,000 VNĐ</p>-->
-<!--        <button th:onclick="'window.location.href=\'/product/' + ${product.id} + '\';'">-->
-<!--            Xem chi tiết-->
-<!--        </button>-->
-<!--        <button th:onclick="'window.location.href=\'/cart/add/' + ${product.id} + '\';'">-->
-<!--            Thêm vào giỏ-->
-<!--        </button>-->
-<!--    </div>-->
+    <div class="product-card" th:each="product : ${products}">
+        <img th:src="@{'/images/' + ${product.imagePath}}" alt="Hoa">
+
+        <h3 th:text="${product.productName}">Tên sản phẩm</h3>
+
+        <p th:text="${product.unitPrice + ' VNĐ'}">300,000 VNĐ</p>
+
+        <button onclick="showProductDetail(this)"
+                th:data-id="${product.id}"
+                th:data-name="${product.productName}"
+                th:data-price="${product.unitPrice}"
+                th:data-stock="${product.stockQuantity}"
+                th:data-description="${product.description}"
+                th:data-image="${product.imagePath}"
+                th:data-category="${product.category?.categoryName}"
+                th:data-supplier="${product.supplier?.supplierName}">
+            Xem chi tiết
+        </button>
+    </div>
 </section>
 </main>
+
+<!-- Modal hiển thị chi tiết sản phẩm -->
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="modal-header">
+            <h2 id="modalProductName">Tên sản phẩm</h2>
+        </div>
+        <div class="modal-body">
+            <div class="modal-image">
+                <img id="modalProductImage" src="" alt="Product Image">
+            </div>
+            <div class="modal-info">
+                <div class="info-item">
+                    <strong>Giá:</strong> <span id="modalProductPrice">0 VNĐ</span>
+                </div>
+                <div class="info-item">
+                    <strong>Số lượng trong kho:</strong> <span id="modalProductStock">0</span>
+                </div>
+                <div class="info-item">
+                    <strong>Danh mục:</strong> <span id="modalProductCategory">N/A</span>
+                </div>
+                <div class="info-item">
+                    <strong>Nhà cung cấp:</strong> <span id="modalProductSupplier">N/A</span>
+                </div>
+                <div class="info-item description">
+                    <strong>Mô tả:</strong>
+                    <p id="modalProductDescription">Không có mô tả</p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-add-to-cart" onclick="addToCart()">Thêm vào giỏ hàng</button>
+            <button class="btn-close" onclick="closeModal()">Đóng</button>
+        </div>
+    </div>
+</div>
+
 <footer>
     <p>© 2025 Hoa Xanh Garden | Địa chỉ: 123 Hoa Hồng, TP.HCM | Điện thoại: 0909 123 456</p>
 </footer>
+
+<script>
+let currentProductId = null;
+
+function showProductDetail(button) {
+    // Lấy thông tin sản phẩm từ data attributes
+    const productId = button.getAttribute('data-id');
+    const productName = button.getAttribute('data-name');
+    const productPrice = button.getAttribute('data-price');
+    const productStock = button.getAttribute('data-stock');
+    const productDescription = button.getAttribute('data-description');
+    const productImage = button.getAttribute('data-image');
+    const productCategory = button.getAttribute('data-category');
+    const productSupplier = button.getAttribute('data-supplier');
+
+    // Lưu ID sản phẩm hiện tại
+    currentProductId = productId;
+
+    // Cập nhật nội dung modal
+    document.getElementById('modalProductName').textContent = productName;
+    document.getElementById('modalProductPrice').textContent = productPrice + ' VNĐ';
+    document.getElementById('modalProductStock').textContent = productStock;
+    document.getElementById('modalProductCategory').textContent = productCategory || 'N/A';
+    document.getElementById('modalProductSupplier').textContent = productSupplier || 'N/A';
+    document.getElementById('modalProductDescription').textContent = productDescription || 'Không có mô tả';
+    document.getElementById('modalProductImage').src = '/images/' + productImage;
+
+    // Hiển thị modal
+    document.getElementById('productModal').style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('productModal').style.display = 'none';
+}
+
+function addToCart() {
+    if (currentProductId) {
+        // Redirect tới trang thêm vào giỏ hàng
+        window.location.href = '/carts/add/' + currentProductId;
+    }
+}
+
+// Đóng modal khi click vào nút X hoặc click ra ngoài modal
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('productModal');
+    const closeBtn = document.querySelector('.close');
+
+    closeBtn.onclick = function() {
+        closeModal();
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+});
+</script>
 
 </body>
 </html>

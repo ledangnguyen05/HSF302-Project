@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Revenue Report</title>
+    <link rel="stylesheet" th:href="@{/revenue_style.css}">
+</head>
+<body>
+    <div class="revenue-container">
+        <h1>📅 Daily Revenue Report</h1>
+
+        <div class="revenue-header-actions">
+            <div class="revenue-nav-buttons">
+                <a th:href="@{/revenue/dashboard}"><button class="revenue-button">📊 Dashboard</button></a>
+                <a th:href="@{/revenue/monthly}"><button class="revenue-button">📈 Monthly Report</button></a>
+            </div>
+            <a th:href="@{/home}"><button class="revenue-button revenue-back-button">🔙 Back To Home</button></a>
+        </div>
+
+        <div class="revenueDaily-filter">
+            <form th:action="@{/revenue/daily}" method="get">
+                <label for="date">Select Date:</label>
+                <input type="date" id="date" name="date" th:value="${date}">
+                <button class="revenue-button" type="submit">View Report</button>
+            </form>
+        </div>
+
+        <div class="revenueDaily-summary">
+            <h2>Revenue for <span th:text="${#temporals.format(date, 'dd/MM/yyyy')}"></span></h2>
+            <p class="value" th:text="${#numbers.formatDecimal(revenue, 0, 'COMMA', 2, 'POINT') + ' ₫'}"></p>
+        </div>
+
+        <div th:if="${orders != null && !orders.empty}">
+            <h2>Orders on <span th:text="${#temporals.format(date, 'dd/MM/yyyy')}"></span></h2>
+            <table class="revenue-table">
+                <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Time</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${orders}">
+                    <td th:text="${order.orderID}"></td>
+                    <td th:text="${order.customer.fullName}"></td>
+                    <td th:text="${#temporals.format(order.orderDate, 'HH:mm')}"></td>
+                    <td class="revenue-currency" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT') + ' ₫'}"></td>
+                    <td th:text="${order.status}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div th:if="${orders == null || orders.empty}" class="revenue-no-data">
+            <h3>No orders found for this date</h3>
+            <p>There are no completed orders on <span th:text="${#temporals.format(date, 'dd/MM/yyyy')}"></span></p>
+        </div>
+    </div>
+</body>
+</html>
