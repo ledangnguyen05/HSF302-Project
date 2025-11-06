@@ -8,6 +8,8 @@ import java.util.List;
 public interface ProductService {
     List<ProductEntity> findByCategory(CategoryEntity category);
 
+    List<ProductEntity> findByCategoryId(int categoryId);
+
     List<ProductEntity> findByProdName(String prodName);
 
     List<ProductEntity> getAllProducts();

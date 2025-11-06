@@ -45,10 +45,18 @@ public class ProductController {
     private SupplierService supplierService;
 
     @GetMapping("/ListProducts")
-    public ModelAndView listProducts() {
-        List<ProductEntity> prodList = productService.getAllProducts();
+    public ModelAndView listProducts(@RequestParam(required = false) Integer categoryId) {
+        List<ProductEntity> prodList;
+        if (categoryId != null && categoryId > 0) {
+            prodList = productService.findByCategoryId(categoryId);
+        } else {
+            prodList = productService.getAllProducts();
+        }
+        List<CategoryEntity> categories = categoryService.findAllCategories();
         ModelAndView mav = new ModelAndView();
         mav.addObject("products", prodList);
+        mav.addObject("categories", categories);
+        mav.addObject("selectedCategoryId", categoryId != null ? categoryId : 0);
         mav.setViewName("product/productList");
         return mav;
     }
@@ -80,7 +88,7 @@ public class ProductController {
 
         if (imageFile != null && !imageFile.isEmpty()) {
             try {
-                String uploadDir = "D:/FlowerImg/";
+                String uploadDir = "C:/FlowerImg/";
                 File uploadDirFile = new File(uploadDir);
                 if (!uploadDirFile.exists()) {
                     uploadDirFile.mkdirs();
@@ -157,16 +165,23 @@ public class ProductController {
             return "product/editProduct";
         }
 
+        // Lấy product hiện tại từ database để giữ lại thông tin cũ (như imagePath)
+        ProductEntity existingProduct = productService.findById(productEntity.getId());
+        if (existingProduct == null) {
+            redirectAttributes.addFlashAttribute("error", "Product not found");
+            return "redirect:/products/ListProducts";
+        }
+
         // Gán category & supplier
         CategoryEntity categoryEntity = categoryService.findByCategoryId(categoryId);
         SupplierEntity supplierEntity = supplierService.findById(supplierId);
         productEntity.setCategory(categoryEntity);
         productEntity.setSupplier(supplierEntity);
 
-        // Xử lý upload ảnh nếu có
+        // Xử lý upload ảnh: chỉ cập nhật nếu có ảnh mới, nếu không thì giữ lại ảnh hiện tại
         if (imageFile != null && !imageFile.isEmpty()) {
             try {
-                String uploadDir = "D:/FlowerImg/";
+                String uploadDir = "C:/FlowerImg/";
                 File uploadDirFile = new File(uploadDir);
                 if (!uploadDirFile.exists()) {
                     uploadDirFile.mkdirs();
@@ -182,7 +197,7 @@ public class ProductController {
                 Path filePath = Paths.get(uploadDir + uniqueFilename);
                 Files.write(filePath, imageFile.getBytes());
 
-                // Cập nhật đường dẫn ảnh trong entity
+                // Cập nhật đường dẫn ảnh mới trong entity
                 productEntity.setImagePath(uniqueFilename);
 
             } catch (IOException e) {
@@ -193,6 +208,9 @@ public class ProductController {
                 model.addAttribute("suppliers", supplierService.getAll());
                 return "product/editProduct";
             }
+        } else {
+            // Nếu không có ảnh mới, giữ lại ảnh hiện tại
+            productEntity.setImagePath(existingProduct.getImagePath());
         }
 
         boolean updated = productService.updateProd(productEntity.getId(), productEntity);
