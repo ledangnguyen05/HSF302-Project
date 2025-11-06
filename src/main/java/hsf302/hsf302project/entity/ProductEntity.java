@@ -33,6 +33,9 @@ public class ProductEntity {
     @Column(name = "Description")
     private String description;
 
+    @Column(name = "ImagePath")
+    private String imagePath;
+
     @ManyToOne
     @JoinColumn(name = "CategoryID", nullable = false)
     @ToString.Exclude

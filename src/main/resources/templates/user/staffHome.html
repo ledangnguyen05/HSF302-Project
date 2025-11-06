@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bảng Điều Khiển Nhân Viên - Hoa Xanh</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" th:href="@{/staff_styles.css}">
 </head>
 <body>
 
@@ -13,7 +13,7 @@
     <a th:href="@{/home}" class="active">🏠 Trang chính</a>
     <a th:href="@{/users/listUsers}">👤 Quản lý người dùng</a>
     <a th:href="@{/orders/listOrders}">📦 Quản lý đơn hàng</a>
-    <a th:href="@{/staff/products}">🌸 Quản lý sản phẩm</a>
+    <a th:href="@{/products/ListProducts}">🌸 Quản lý sản phẩm</a>
     <a th:href="@{/users/updatePage/{id}(id=${session.user.id})}">👤 Hồ sơ cá nhân</a>
     <a th:href="@{/logout}">🚪 Đăng xuất</a>
 </aside>
