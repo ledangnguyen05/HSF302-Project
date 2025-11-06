@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revenue Dashboard</title>
+    <link rel="stylesheet" th:href="@{/revenue_style.css}">
+</head>
+<body>
+    <div class="revenue-container">
+        <h1>📊 Revenue Dashboard</h1>
+
+        <div class="revenue-header-actions">
+            <div class="revenue-nav-buttons">
+                <a th:href="@{/revenue/daily}"><button class="revenue-button">📅 Daily Report</button></a>
+                <a th:href="@{/revenue/monthly}"><button class="revenue-button">📈 Monthly Report</button></a>
+            </div>
+            <a th:href="@{/home}"><button class="revenue-button revenue-back-button">🔙 Back To Home</button></a>
+        </div>
+
+        <div class="revenueDashboard-stats-grid">
+            <div class="revenueDashboard-stat-card">
+                <h3>Today's Revenue</h3>
+                <p class="value" th:text="${#numbers.formatDecimal(todayRevenue, 0, 'COMMA', 2, 'POINT') + ' ₫'}"></p>
+            </div>
+            <div class="revenueDashboard-stat-card">
+                <h3>This Month Revenue</h3>
+                <p class="value" th:text="${#numbers.formatDecimal(monthRevenue, 0, 'COMMA', 2, 'POINT') + ' ₫'}"></p>
+            </div>
+            <div class="revenueDashboard-stat-card">
+                <h3>Total Orders</h3>
+                <p class="value" th:text="${totalOrders}"></p>
+            </div>
+            <div class="revenueDashboard-stat-card">
+                <h3>Pending Orders</h3>
+                <p class="value" th:text="${pendingOrders}"></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

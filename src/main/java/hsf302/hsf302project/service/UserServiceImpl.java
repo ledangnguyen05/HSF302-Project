@@ -78,4 +78,11 @@ public class UserServiceImpl implements UserService {
     public UserEntity findByPhone(String phone) {
         return userRepository.findByPhone(phone).orElse(null);
     }
+
+    @Override
+    public boolean isAdmin(UserEntity user) {
+        if (user == null || user.getRole() == null)
+            return false;
+        return "Admin".equalsIgnoreCase(user.getRole().getRoleName());
+    }
 }
