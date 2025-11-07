@@ -37,6 +37,7 @@ public class OrderEntity {
     @Column(name = "TotalAmount", precision = 10, scale = 2, nullable = false)
     private BigDecimal totalAmount = BigDecimal.ZERO;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "Status", nullable = false)
     private Status status = Status.PENDING;
 
@@ -67,4 +68,5 @@ public class OrderEntity {
         detail.setOrder(this);
         totalAmount = totalAmount.add(detail.getSubTotal());
     }
+
 }

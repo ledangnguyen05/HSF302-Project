@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,60 +10,60 @@
 
 <aside>
     <h2 style="color:white">🌿 Admin Panel</h2>
-    <a th:href="@{/home}" class="active">🏠 Trang chính</a>
-    <a th:href="@{/users/listUsers}">👤 Quản lý người dùng</a>
-    <a th:href="@{/products/ListProducts}">🌸 Quản lý sản phẩm</a>
-    <a th:href="@{/admin/orders}">🛒 Quản lý đơn hàng</a>
-    <a th:href="@{/categories/listCategory}">🏷️ Quản lý danh mục</a>
-    <a th:href="@{/suppliers/listSuppliers}">🏢 Doanh nghiệp / Công ty cung cấp</a>
-    <a th:href="@{/revenue/dashboard}">📈 Thống kê doanh thu</a>
-    <a th:href="@{/logout}">🚪 Đăng xuất</a>
+    <a th:href="@{/home}" class="active">🏠 Home</a>
+    <a th:href="@{/users/listUsers}">👤 Manage Users</a>
+    <a th:href="@{/products/ListProducts}">🌸 Manage Products</a>
+    <a th:href="@{/orders/listOrders}">🛒 Manage Orders</a>
+    <a th:href="@{/categories/listCategory}">🏷️ Manage Categories</a>
+    <a th:href="@{/suppliers/listSuppliers}">🏢 Suppliers / Companies</a>
+    <a th:href="@{/revenue/dashboard}">📈 Revenue Statistics</a>
+    <a th:href="@{/logout}">🚪 Logout</a>
 </aside>
 
 <main>
     <header>
         <h1 style="color:white">Welcome Admin, <span th:text="${session.user.fullName}"></span> 👋</h1>
-        <a th:href="@{/users/updatePage/{id}(id=${session.user.id})}"><button>Hồ sơ cá nhân</button></a>
+        <a th:href="@{/users/updatePage/{id}(id=${session.user.id})}"><button>My Profile</button></a>
     </header>
 
     <section>
-        <h2>📊 Tổng quan hệ thống</h2>
+        <h2>📊 System Overview</h2>
         <div style="display: flex; gap: 20px; margin-top: 20px;">
             <div style="flex: 1; background-color: white; padding: 20px; border-radius: 10px; text-align: center;">
-                <h3>👥 Người dùng</h3>
+                <h3>👥 Users</h3>
                 <p th:text="${totalUsers}">120</p>
             </div>
             <div style="flex: 1; background-color: white; padding: 20px; border-radius: 10px; text-align: center;">
-                <h3>🌸 Sản phẩm</h3>
+                <h3>🌸 Products</h3>
                 <p th:text="${totalProducts}">45</p>
             </div>
             <div style="flex: 1; background-color: white; padding: 20px; border-radius: 10px; text-align: center;">
-                <h3>🛒 Đơn hàng</h3>
+                <h3>🛒 Orders</h3>
                 <p th:text="${totalOrders}">89</p>
             </div>
         </div>
 
-        <h2 style="margin-top: 40px;">🧾 Danh sách đơn hàng gần đây</h2>
+        <h2 style="margin-top: 40px;">🧾 Recent Orders</h2>
         <table>
             <thead>
             <tr>
-                <th>Mã đơn</th>
-                <th>Khách hàng</th>
-                <th>Ngày đặt</th>
-                <th>Tổng tiền</th>
-                <th>Trạng thái</th>
-                <th>Hành động</th>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Order Date</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Action</th>
             </tr>
             </thead>
             <tbody th:each="order : ${recentOrders}">
             <tr>
                 <td th:text="${order.id}">#123</td>
-                <td th:text="${order.customerName}">Nguyễn Hoa</td>
+                <td th:text="${order.customerName}">Nguyen Hoa</td>
                 <td th:text="${order.date}">2025-10-24</td>
-                <td th:text="${order.total}">350,000 VNĐ</td>
-                <td th:text="${order.status}">Đang giao</td>
+                <td th:text="${order.total}">350,000 VND</td>
+                <td th:text="${order.status}">Delivering</td>
                 <td>
-                    <button th:onclick="'window.location.href=\'/admin/orders/' + ${order.id} + '\';'">Chi tiết</button>
+                    <button th:onclick="'window.location.href=\'/admin/orders/' + ${order.id} + '\';'">Details</button>
                 </td>
             </tr>
             </tbody>

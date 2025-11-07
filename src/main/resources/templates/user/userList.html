@@ -174,33 +174,75 @@
 </head>
 <body id="user-page">
 
-<!-- Search Form -->
 <form id="search-form" class="form-container" th:action="@{/users/search}" method="post">
-    <select name="searchType" id="search-type" class="form-select">
+    <!-- Search Type -->
+    <select name="searchType" id="search-type" class="form-select" onchange="toggleKeywordInput()">
         <option value="byUserName" th:selected="${searchType=='byUserName'}">Search by User Name</option>
         <option value="byMail" th:selected="${searchType=='byMail'}">Search by Email</option>
         <option value="byPhone" th:selected="${searchType=='byPhone'}">Search by Phone</option>
-        <option th:if="${session.user.role.id==1}" value="byRoleName"
-                th:selected="${searchType=='byRoleName'}">
+        <option th:if="${session.user.role.id==1}" value="byRoleName" th:selected="${searchType=='byRoleName'}">
             Search by Role Name
         </option>
     </select>
 
-    <input type="text" name="keyword" id="search-keyword" class="form-input"
+    <!-- Text input -->
+    <input type="text"
+           name="keywordText"
+           id="search-keyword"
+           class="form-input"
            placeholder="Enter what you want to search"
+           th:value="${param.keywordText != null ? param.keywordText : ''}"/>
 
-           th:value="${param.keyword!=null?param.keyword:''}" required>
+    <!-- Role dropdown -->
+    <select name="keywordRole" id="role-dropdown" class="form-select"
+            th:style="${searchType=='byRoleName'} ? '' : 'display:none'">
+        <option value="" disabled th:if="${param.keywordRole == null || param.keywordRole == ''}" selected>-- Choose role --</option>
+        <option th:each="r : ${roleList}"
+                th:value="${r.roleName}"
+                th:text="${r.roleName}"
+                th:selected="${param.keywordRole == r.roleName}">
+        </option>
+    </select>
 
-    <button type="submit" id="btn-search" class="btn btn-primary">Search</button>
+    <!-- Buttons -->
+    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="button" class="btn btn-primary" onclick="window.location.href='/users/listUsers'">
+        Return All User List
+    </button>
 </form>
 
-<!-- Messages -->
-<p class="error-message" th:if="${error}" th:text="${error}"></p>
-<p class="success-message" th:if="${message}" th:text="${message}"></p>
+<script>
+    function toggleKeywordInput() {
+        const type = document.getElementById('search-type').value;
+        const textInput = document.getElementById('search-keyword');
+        const roleSelect = document.getElementById('role-dropdown');
 
-<!-- User List Header -->
+        if (type === 'byRoleName') {
+            textInput.style.display = 'none';
+            textInput.disabled = true;
+            textInput.removeAttribute('required');
+
+            roleSelect.style.display = 'inline-block';
+            roleSelect.disabled = false;
+            roleSelect.setAttribute('required', 'required');
+        } else {
+            textInput.style.display = 'inline-block';
+            textInput.disabled = false;
+            textInput.setAttribute('required', 'required');
+
+            roleSelect.style.display = 'none';
+            roleSelect.disabled = true;
+            roleSelect.removeAttribute('required');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', toggleKeywordInput);
+</script>
+
+
+<p class="error-message" th:if="${error}" th:text="${error}"></p>
+
 <h1 id="page-title">User List</h1>
-<!-- ADMIN FUNCTION -->
 <div style="width:100%; display:flex; justify-content:center; margin-top:20px;"
      th:if="${session.user.role.id==1}">
     <button class="btn btn-secondary px-4 py-2"
@@ -208,7 +250,6 @@
         ➕ Create Account
     </button>
 </div>
-<!-- ADMIN TABLE -->
 <table id="admin-table" class="user-table" border="1" th:if="${session.user.role.id==1}">
     <thead>
     <tr>

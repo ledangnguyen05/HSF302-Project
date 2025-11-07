@@ -36,8 +36,8 @@ public class CategoryController {
 
     @PostMapping("/createExecute")
     public String createCategoryExecute(@Valid @ModelAttribute("category") CategoryEntity category,
-                                        Model model,
                                         BindingResult result,
+                                        Model model,
                                         RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             model.addAttribute("category", category);
@@ -67,8 +67,8 @@ public class CategoryController {
 
     @PostMapping("/updateExecute")
     public String updateCategoryExecute(@Valid @ModelAttribute("category") CategoryEntity category,
-                                        Model model,
                                         BindingResult result,
+                                        Model model,
                                         RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             model.addAttribute("category", category);
@@ -105,9 +105,9 @@ public class CategoryController {
     @PostMapping("/searchByName")
     public String searchCategoryByName(@RequestParam("categoryName") String categoryName,
                                        Model model) {
-        List<CategoryEntity> list=categoryService.findByCategoryNameContaining(categoryName);
+        List<CategoryEntity> list=categoryService.findByCategoryNameContaining(categoryName.trim());
         if(list==null || list.isEmpty()){
-            model.addAttribute("error", "Category name not found for :"+categoryName);
+            model.addAttribute("error", "Category name not found for :"+categoryName.trim());
         }else {
             model.addAttribute("categoryList", list);
         }

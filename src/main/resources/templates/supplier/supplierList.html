@@ -110,8 +110,14 @@
             <option value="byContactName" th:selected="${searchType=='byContactName'}">Search by Contact Name</option>
             <option value="byPhone" th:selected="${searchType=='byPhone'}">Search by Phone</option>
         </select>
-        <input type="text" id="keyword" name="keyword" th:value="${param.keyword!=null?param.keyword:''}" placeholder="Enter what you want to search" required>
+        <input type="text" id="keyword" name="keyword"
+               th:value="${param.keyword!=null?param.keyword:''}"
+               placeholder="Enter what you want to search"
+               required
+               style="width: 300px; padding: 6px 10px; border-radius: 5px; border: 1px solid #228B22;">
+
         <input type="submit" id="searchBtn" value="Search">
+        <button type="button" class="btn" onclick="window.location.href='/suppliers/listSuppliers'" >Return All Supplier List</button>
     </form>
 
     <a th:href="@{/suppliers/addPage}" class="back-link"><button class="btn">+ Add new supplier</button></a>

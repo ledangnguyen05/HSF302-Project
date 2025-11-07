@@ -8,6 +8,7 @@ import hsf302.hsf302project.repository.OrderRepository;
 import hsf302.hsf302project.repository.ProductRepository;
 import hsf302.hsf302project.repository.UserRepository;
 import hsf302.hsf302project.service.OrderService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -31,9 +32,6 @@ public class OrderController {
     private OrderService orderService;
 
     @Autowired
-    OrderDetailRepository orderDetailRepository;
-
-    @Autowired
     ProductRepository productRepository;
 
     @Autowired
@@ -43,33 +41,39 @@ public class OrderController {
 
     @GetMapping("/listOrders")
     public String getAllOrders(Model model) {
-        model.addAttribute("orders",orderService.findAll());
+        model.addAttribute("orders", orderService.findAll());
         return "order/orderList";
     }
 
     @GetMapping("/addPage")
-    public String addPage(Model model){
+    public String addPage(Model model,
+                          HttpSession sesison) {
         OrderEntity order = new OrderEntity();
         order.getOrderDetails().add(new OrderDetailEntity());
-
+        UserEntity user = (UserEntity) sesison.getAttribute("user");
+        if (user.getRole().getId() == 3) {
+            order.setCustomer(user);
+        }
         model.addAttribute("order", order);
-        model.addAttribute("products",productRepository.findAll());
+        model.addAttribute("products", productRepository.findAll());
         return "order/addOrder";
     }
 
     @PostMapping("addExecute")
     @Transactional
     public String createOrder(@Valid @ModelAttribute("order") OrderEntity order,
+                              BindingResult result,
                               Model model,
                               RedirectAttributes redirectAttributes,
-                              BindingResult result) {
-        if(result.hasErrors()){
-            model.addAttribute("order",order);
+                              HttpSession sesison) {
+        UserEntity user = (UserEntity) sesison.getAttribute("user");
+        if (result.hasErrors()) {
+            model.addAttribute("order", order);
             return "order/addOrder";
         }
         Integer customerId = order.getCustomer() != null ? order.getCustomer().getId() : null;
 
-        if(customerId == null) {
+        if (customerId == null) {
             throw new IllegalArgumentException("Customer ID is required");
         }
 
@@ -77,32 +81,32 @@ public class OrderController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Customer ID"));
 
         order.setCustomer(customer);
-        boolean isAdded= orderService.create(order);
-        if(isAdded){
-            redirectAttributes.addFlashAttribute("message","Order added successfully");
+        boolean isAdded = orderService.create(order);
+        if (isAdded) {
+            redirectAttributes.addFlashAttribute("message", "Order added successfully");
             return "redirect:/orders/listOrders";
-        }else{
-            model.addAttribute("error","Failed to add order");
+        } else {
+            model.addAttribute("error", "Failed to add order");
             return "order/addOrder";
         }
     }
 
     @GetMapping("/delete/{id}")
-    public String delete(@PathVariable int id, RedirectAttributes redirectAttributes){
-        boolean isDeleted= orderService.delete(id);
-        if(isDeleted){
-            redirectAttributes.addFlashAttribute("message","Order deleted successfully");
-        }else{
-            redirectAttributes.addFlashAttribute("error","Failed to delete order");
+    public String delete(@PathVariable int id, RedirectAttributes redirectAttributes) {
+        boolean isDeleted = orderService.delete(id);
+        if (isDeleted) {
+            redirectAttributes.addFlashAttribute("message", "Order deleted successfully");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Failed to delete order");
         }
         return "redirect:/orders/listOrders";
     }
 
     @GetMapping("/cancel/{id}")
-    public String cancel(@PathVariable int id){
-        OrderEntity order=orderService.findById(id);
+    public String cancel(@PathVariable int id) {
+        OrderEntity order = orderService.findById(id);
         order.setStatus(OrderEntity.Status.CANCELLED);
-        orderService.update(id,order);
+        orderService.update(id, order);
         return "redirect:/orders/listOrders";
     }
 
@@ -115,7 +119,7 @@ public class OrderController {
 
         switch (searchType) {
             case "byCustomerName":
-                String keyword = params.get("keyword");
+                String keyword = params.get("keyword").trim();
                 orders = orderRepository.findOrdersByCustomer_fullNameContainingIgnoreCase(keyword);
                 break;
 
@@ -138,6 +142,54 @@ public class OrderController {
         }
         model.addAttribute("orders", orders);
         return "order/orderList";
+    }
+
+    @GetMapping("/updatePage/{id}")
+    public String updatePage(Model model,
+                             HttpSession session,
+                             @PathVariable int id) {
+        OrderEntity order = orderService.findById(id);
+        if (order == null) {
+            return "redirect:/orders/listOrders";
+        }
+
+        UserEntity user = (UserEntity) session.getAttribute("user");
+        if (user.getRole().getId() == 3) {
+            order.setCustomer(user);
+        }
+
+        model.addAttribute("order", order);
+        model.addAttribute("products", productRepository.findAll());
+        return "order/updateOrder";
+    }
+
+
+    @PostMapping("/updateExecute")
+    @Transactional
+    public String updateExecute(@Valid @ModelAttribute("order") OrderEntity order,
+                                BindingResult result,
+                                Model model,
+                                RedirectAttributes redirectAttributes,
+                                HttpSession session) {
+        if (result.hasErrors()) {
+            model.addAttribute("products", productRepository.findAll());
+            return "order/updateOrder";
+        }
+
+        Integer orderId = order.getOrderID();
+        if (orderId == null) {
+            redirectAttributes.addFlashAttribute("error", "Order ID missing!");
+            return "redirect:/orders/listOrders";
+        }
+
+        boolean isUpdated = orderService.update(orderId, order);
+        if (isUpdated) {
+            redirectAttributes.addFlashAttribute("message", "Order updated successfully!");
+            return "redirect:/orders/listOrders";
+        } else {
+            model.addAttribute("error", "Failed to update order");
+            return "order/updateOrder";
+        }
     }
 
 }
