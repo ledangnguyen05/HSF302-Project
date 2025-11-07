@@ -1,101 +1,145 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Supplier - Hoa Xanh Garden</title>
+    <title>Edit Supplier Page</title>
+    <link rel="stylesheet" th:href="@{/admin_styles.css}">
     <style>
-        body#update-supplier-page {
+        body {
             font-family: Arial, sans-serif;
-            background-color: #f0fff0; /* pale green */
-            color: #006400; /* dark green text */
-            padding: 30px;
-        }
-
-        .container#update-supplier-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            border: 1px solid #228B22;
-            border-radius: 12px;
+            background: #f5f5f5;
             padding: 20px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
 
-        h2#update-supplier-title {
-            color: #228B22;
+        .container-form {
+            background-color: #fff;
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        h2 {
             text-align: center;
-            margin-bottom: 20px;
+            color: #2c3e50;
+            margin-bottom: 25px;
         }
 
-        form#update-supplier-form {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        label {
+            font-weight: 500;
+            margin-top: 15px;
+            display: block;
         }
 
-        label.form-label {
-            color: #006400;
-            font-weight: bold;
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            margin-top: 5px;
+            transition: border-color 0.3s;
         }
 
-        input.form-input {
-            padding: 6px 10px;
-            border-radius: 5px;
-            border: 1px solid #228B22;
-        }
-
-        button.btn {
-            padding: 8px 16px;
-            border-radius: 5px;
-            border: none;
-            background-color: #228B22;
-            color: white;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        button.btn:hover {
-            background-color: #006400;
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4caf50;
+            box-shadow: 0 0 5px rgba(76,175,80,0.3);
         }
 
         .error {
-            color: red;
-            font-size: 0.9em;
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
         }
 
-        a.back-link {
+        button[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            background-color: #007bff;
+            color: white;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .back-button {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
             text-decoration: none;
+            background-color: #17a2b8;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #138496;
+        }
+
+        .message {
+            text-align: center;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+
+        .message-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
     </style>
+
 </head>
-<body id="update-supplier-page">
-<div class="container" id="update-supplier-container">
-    <h2 id="update-supplier-title">Update Supplier</h2>
-    <form id="update-supplier-form" th:action="@{/suppliers/updateExecute}" method="post" th:object="${supplier}">
-        <label for="id" class="form-label">Supplier ID:</label>
-        <input type="text" id="id" th:field="*{id}" class="form-input" readonly>
+<body>
 
-        <label for="supplierName" class="form-label">Supplier Name:</label>
-        <input type="text" id="supplierName" th:field="*{supplierName}" class="form-input" placeholder="Enter supplier name">
-        <div class="error" th:if="${#fields.hasErrors('supplierName')}" th:errors="*{supplierName}"></div>
+<div class="container-form">
+    <h2>✏️ Edit Supplier</h2>
+    <form th:action="@{/suppliers/updateExecute}" th:object="${supplier}" method="post">
+        <input type="hidden" th:field="*{id}"/>
 
-        <label for="contactName" class="form-label">Contact Name:</label>
-        <input type="text" id="contactName" th:field="*{contactName}" class="form-input" placeholder="Enter contact name">
-        <div class="error" th:if="${#fields.hasErrors('contactName')}" th:errors="*{contactName}"></div>
+        <label>Supplier Name *</label>
+        <input type="text" th:field="*{supplierName}" placeholder="Enter supplier name" required>
+        <span class="error" th:if="${#fields.hasErrors('supplierName')}" th:errors="*{supplierName}"></span>
 
-        <label for="phone" class="form-label">Phone:</label>
-        <input type="text" id="phone" th:field="*{phone}" class="form-input" placeholder="Enter phone">
-        <div class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+        <label>Contact Name *</label>
+        <input type="text" th:field="*{contactName}" placeholder="Enter contact name" required>
+        <span class="error" th:if="${#fields.hasErrors('contactName')}" th:errors="*{contactName}"></span>
 
-        <label for="address" class="form-label">Address:</label>
-        <input type="text" id="address" th:field="*{address}" class="form-input" placeholder="Enter address">
-        <div class="error" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+        <label>Phone *</label>
+        <input type="text" th:field="*{phone}" placeholder="Enter phone" required>
+        <span class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
 
-        <button type="submit" class="btn">Update</button>
+        <label>Address *</label>
+        <input type="text" th:field="*{address}" placeholder="Enter address" required>
+        <span class="error" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></span>
+
+        <button type="submit">Update Supplier</button>
     </form>
-    <a th:href="@{/suppliers/listSuppliers}" class="back-link"><button class="btn">🔙 Back To Home</button></a>
-    <p class="error" th:if="${error}" th:text="${error}"></p>
+
+    <a th:href="@{/suppliers/listSuppliers}" class="back-button">🔙 Back To Supplier List</a>
+
+    <div th:if="${error}" class="message message-error" th:text="${error}"></div>
+    <div th:if="${message}" class="message message-success" th:text="${message}"></div>
 </div>
+
 </body>
 </html>
