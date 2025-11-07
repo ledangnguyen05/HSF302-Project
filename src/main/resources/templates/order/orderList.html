@@ -47,19 +47,19 @@
             text-decoration: none;
         }
 
-        table#orderTable {
+        table.orderTable {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
         }
 
-        table#orderTable th, table#orderTable td {
+        table.orderTable th, table.orderTable td {
             border: 1px solid #228B22;
             padding: 8px;
             text-align: center;
         }
 
-        table#orderTable thead {
+        table.orderTable thead {
             background-color: #228B22;
             color: white;
         }
@@ -104,11 +104,6 @@
     <div class="card shadow p-4">
         <h2 id="order-list-title">📦 Order Management</h2>
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <a th:href="@{/orders/addPage}" class="btn"><button class="btn">+ Add New Order</button></a>
-        </div>
-
-        <!-- Search box -->
         <form class="mb-4" th:action="@{/orders/search}" method="get" th:if="${session.user.role.id!=3}">
             <div class="row g-2 align-items-center">
                 <div class="col-md-3">
@@ -121,12 +116,34 @@
                 </div>
 
                 <div class="col-md-6" id="searchInputArea">
-                    <input type="text" class="form-control" id="keyword" name="keyword"
-                           placeholder="Enter customer name..." required>
+                    <!-- Customer Name -->
+                    <input type="text" class="form-control" name="keyword"
+                           placeholder="Enter customer name..."
+                           th:value="${param.keyword}"
+                           th:if="${param.searchType=='byCustomerName'}"
+                           th:disabled="${param.searchType!='byCustomerName'}"/>
+
+                    <!-- Date Range -->
+                    <div class="input-group" th:if="${param.searchType=='byDateRange'}">
+                        <input type="date" class="form-control" name="startDate" th:value="${param.startDate}">
+                        <span class="input-group-text">to</span>
+                        <input type="date" class="form-control" name="endDate" th:value="${param.endDate}">
+                    </div>
+
+                    <!-- Status -->
+                    <select class="form-select" name="keyword" th:if="${param.searchType=='byStatus'}">
+                        <option value="" disabled>-- Choose Status --</option>
+                        <option value="PENDING" th:selected="${param.keyword=='PENDING'}">Pending</option>
+                        <option value="CONFIRMED" th:selected="${param.keyword=='CONFIRMED'}">Confirmed</option>
+                        <option value="IN_PREPARING" th:selected="${param.keyword=='IN_PREPARING'}">In Preparing</option>
+                        <option value="FINISHED" th:selected="${param.keyword=='FINISHED'}">Finished</option>
+                        <option value="CANCELLED" th:selected="${param.keyword=='CANCELLED'}">Cancelled</option>
+                    </select>
                 </div>
 
                 <div class="col-md-2">
                     <button class="btn" type="submit">Search</button>
+                    <button type="button" class="btn" onclick="window.location.href='/orders/listOrders'">Return All Order List</button>
                 </div>
             </div>
         </form>
@@ -161,7 +178,7 @@
         </script>
 
         <!-- Orders Table -->
-        <table class="table table-hover table-bordered align-middle text-center" id="orderTable" th:if="${session.user.role.id!=3}">
+        <table border="1" class="orderTable" th:if="${session.user.role.id!=3}">
             <thead>
             <tr>
                 <th>#</th>
@@ -173,7 +190,7 @@
                 <th>Order Date</th>
                 <th>Total Cost</th>
                 <th>Status</th>
-                <th th:if="${session.user.id==1}">Actions</th>
+                <th th:if="${session.user.id==1}">Action</th>
             </tr>
             </thead>
             <tbody>
@@ -187,11 +204,20 @@
                 <td th:text="${#temporals.format(order.orderDate, 'HH:mm dd/MM/yyyy')}"></td>
                 <td th:text="${#numbers.formatInteger(order.totalAmount,0)}"></td>
                 <td th:text="${order.status}"></td>
-                <td class="action-btns" th:if="${session.user.role.id==3}">
-                    <a th:href="@{/orders/delete/{id}(id=${order.orderID})}" onclick="return confirm('Are you sure to delete?')">
+                <td class="action-btns" th:if="${session.user.role.id==1}" style="text-align: left;">
+                    <a th:href="@{/orders/delete/{id}(id=${order.orderID})}"
+                       onclick="return confirm('Are you sure to delete?')"
+                       style="margin-left: 8px; display: inline-block;">
                         <button class="btn">Delete</button>
                     </a>
+
+                    <a th:if="${order.status != T(hsf302.hsf302project.entity.OrderEntity.Status).CANCELLED}"
+                       th:href="@{/orders/updatePage/{id}(id=${order.orderID})}"
+                       style="display: inline-block;">
+                        <button class="btn">Update</button>
+                    </a>
                 </td>
+
             </tr>
             <tr th:if="${orders.isEmpty()}">
                 <td colspan="10" class="text-center text-muted">No orders found.</td>
@@ -200,7 +226,7 @@
         </table>
 
         <!-- Customer view -->
-        <table class="table table-hover table-bordered align-middle text-center" id="orderTableCustomer" th:if="${session.user.role.id==3}">
+        <table border="1" class="orderTable" th:if="${session.user.role.id==3}">
             <thead>
             <tr>
                 <th>#</th>
@@ -214,7 +240,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="order, iStat : ${orders}" th:if="${order.status != T(hsf302.hsf302project.entity.OrderEntity.Status).CANCELLED}">
+            <tr th:each="order, iStat : ${orders}" th:if="${order.status != T(hsf302.hsf302project.entity.OrderEntity.Status).CANCELLED && order.customer.id==session.user.id}">
                 <td th:text="${iStat.index + 1}"></td>
                 <td th:text="${order.orderDetails[0].product.productName}"></td>
                 <td th:text="${#numbers.formatInteger(order.orderDetails[0].product.unitPrice,0)}"></td>
@@ -239,7 +265,7 @@
 
 <div class="text-center mt-3">
     <a th:href="@{/home}" class="back-link">
-        <button class="btn">🔙 Back To Home</button>
+        <button  style="margin-top: 20px" class="btn">🔙 Back To Home</button>
     </a>
 </div>
 

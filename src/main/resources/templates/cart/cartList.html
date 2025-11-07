@@ -5,91 +5,140 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cart List - Hoa Xanh Garden</title>
     <style>
-        /* Body */
         body#cart-page {
-            font-family: Arial, sans-serif;
-            background-color: #f0fff0; /* pale green background */
-            color: #006400; /* dark green text */
-            margin: 20px;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: linear-gradient(to bottom right, #f5fff5, #e6f7e6);
+            color: #004d00;
+            margin: 0;
+            padding: 40px 20px;
         }
 
-        /* Title */
+        /* ===========================
+           🌼 Tiêu đề trang
+        ============================ */
         h2#cart-title {
             text-align: center;
-            color: #228B22; /* forest green */
-            margin-bottom: 20px;
+            color: #228B22;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
         }
 
-        /* Messages */
+        /* ===========================
+           📝 Thông báo
+        ============================ */
         p.message {
+            text-align: center;
             font-weight: bold;
             margin: 10px 0;
         }
-        p.success-message { color: #228B22; }
-        p.error-message { color: red; }
+        p.success-message { color: #2e8b57; }
+        p.error-message { color: #d62828; }
 
-        /* Table */
+        /* ===========================
+           📦 Bảng giỏ hàng
+        ============================ */
         table#cart-table {
-            width: 100%;
+            width: 90%;
+            margin: 0 auto;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
         }
 
         table#cart-table th, table#cart-table td {
-            border: 1px solid #228B22;
-            padding: 10px;
+            border: 1px solid #c2e0c2;
+            padding: 12px 10px;
             text-align: center;
         }
 
         table#cart-table th {
-            background-color: #98FB98; /* pale green */
+            background-color: #228B22;
+            font-size: 16px;
+            color: #004d00;
         }
 
-        /* Form inside table */
+        table#cart-table tr:nth-child(even) {
+            background-color: #f8fff8;
+        }
+
+        table#cart-table tr:hover {
+            background-color: #e9ffe9;
+            transition: 0.3s;
+        }
+
         table#cart-table td form {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
 
         input.quantity-input {
             width: 60px;
             text-align: center;
             border: 1px solid #228B22;
-            border-radius: 4px;
-            padding: 3px;
-        }
-
-        /* Buttons */
-        button.quantity-btn, button.update-btn, button#btn-back {
-            background-color: #228B22;
-            color: white;
-            border: none;
-            padding: 5px 10px;
             border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button.quantity-btn:hover, button.update-btn:hover, button#btn-back:hover {
-            background-color: #006400;
-        }
-
-        /* Action links */
-        a.action-link {
-            text-decoration: none;
-            color: #006400;
-            margin: 0 5px;
+            padding: 5px;
             font-weight: bold;
         }
 
+        /* ===========================
+           🟩 Các nút
+        ============================ */
+        button.quantity-btn, button.update-btn, button#btn-back, input[type="submit"] {
+            background-color: #2e8b57;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        button.quantity-btn:hover,
+        button.update-btn:hover,
+        button#btn-back:hover,
+        input[type="submit"]:hover {
+            background-color: #1f6f43;
+            transform: scale(1.05);
+        }
+
+        /* ===========================
+           ❌ Liên kết hành động
+        ============================ */
+        a.action-link {
+            text-decoration: none;
+            color: #006400;
+            margin: 0 8px;
+            font-weight: bold;
+            transition: 0.25s ease;
+        }
+
         a.action-link:hover {
+            color: #d62828;
             text-decoration: underline;
         }
 
-        /* Back button container */
+        /* ===========================
+           🔙 Nút quay lại
+        ============================ */
         div#back-container {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 30px;
+        }
+
+        button#btn-back {
+            font-size: 15px;
+            padding: 8px 15px;
+        }
+        input[type="submit"][value="Order"] {
+            background-color: #3cb371;
+            font-weight: bold;
+        }
+
+        input[type="submit"][value="Order"]:hover {
+            background-color: #2e8b57;
         }
     </style>
 </head>
@@ -97,8 +146,6 @@
 
 <h2 id="cart-title">Cart List</h2>
 
-<p class="message success-message" th:if="${message}" th:text="${message}"></p>
-<p class="message error-message" th:if="${error}" th:text="${error}"></p>
 
 <table id="cart-table">
     <thead>
@@ -109,7 +156,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="cart : ${cartList}">
+    <tr th:each="cart : ${cartList}" th:if="${cart.customer.id==session.user.id}">
         <td th:text="${cart.product.productName}"></td>
         <td>
             <form th:action="@{/carts/updateQuantity/{id}(id=${cart.id})}" method="post">
@@ -120,7 +167,12 @@
             </form>
         </td>
         <td>
-            <a th:href="@{/payment}" class="action-link">Make payment |</a>
+            <form th:action="@{/orders/addExecute}" method="post">
+                <input type="hidden" name="orderDetails[0].product.id" th:value="${cart.product.id}">
+                <input type="hidden" name="orderDetails[0].quantity" th:value="${cart.quantity}">
+                <input type="hidden" name="customer.id" th:value="${session.user.id}">
+                <a href="#" class="action-link" onclick="if(confirm('Confirm order?')) this.closest('form').submit(); return false;">Order |</a>
+            </form>
             <a th:href="@{'/carts/deleteCart/' + ${cart.id}}" class="action-link"
                onclick="return confirm('Delete this cart?')">Delete</a>
         </td>
@@ -135,7 +187,6 @@
 </div>
 
 <script>
-    // Increases or decreases the input number
     function changeQuantity(button, delta) {
         const input = button.parentNode.querySelector('input[name="quantity"]');
         let newValue = parseInt(input.value) + delta;

@@ -88,32 +88,37 @@ public class OrderServiceImpl implements OrderService {
             OrderEntity existingOrder = orderRepository.findById(orderId).orElse(null);
             if (existingOrder == null) return false;
 
+            // Update basic info
             existingOrder.setStatus(newOrderData.getStatus());
             existingOrder.setNotes(newOrderData.getNotes());
-            existingOrder.setEmployee(newOrderData.getEmployee());
             existingOrder.setUpdatedAt(LocalDateTime.now());
 
-            // Clear existing details if changed
-            existingOrder.getOrderDetails().clear();
             existingOrder.setTotalAmount(BigDecimal.ZERO);
 
             if (newOrderData.getOrderDetails() != null && !newOrderData.getOrderDetails().isEmpty()) {
-                for (OrderDetailEntity detail : newOrderData.getOrderDetails()) {
-                    detail.setOrder(existingOrder);
-                    detail.calculateSubTotal();
-                    existingOrder.getOrderDetails().add(detail);
-                    existingOrder.setTotalAmount(existingOrder.getTotalAmount().add(detail.getSubTotal()));
+                for (int i = 0; i < existingOrder.getOrderDetails().size(); i++) {
+                    OrderDetailEntity oldDetail = existingOrder.getOrderDetails().get(i);
+                    OrderDetailEntity newDetail = newOrderData.getOrderDetails().get(i);
+
+                    var product = productRepository.findById(newDetail.getProduct().getId())
+                            .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
+
+                    oldDetail.setProduct(product);
+                    oldDetail.setQuantity(newDetail.getQuantity());
+                    oldDetail.setUnitPrice(product.getUnitPrice());
+                    oldDetail.calculateSubTotal();
+                    existingOrder.setTotalAmount(existingOrder.getTotalAmount().add(oldDetail.getSubTotal()));
                 }
             }
 
             orderRepository.save(existingOrder);
             return true;
-
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
     }
+
 
     @Override
     @Transactional

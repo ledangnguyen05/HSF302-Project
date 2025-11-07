@@ -3,29 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang Chủ - Cửa Hàng Hoa Tươi</title>
+    <title>Flower Shop</title>
     <link rel="stylesheet" th:href="@{/guest_styles.css}">
 
 </head>
 <body>
 
 <header>
-    🌿 Hoa Xanh Garden - Lan tỏa hương thiên nhiên 🌿
+    🌿 Hoa Xanh Garden 🌿
 </header>
 
 <nav>
-    <a th:href="@{/home}">Trang chủ</a>
-    <a th:href="@{/products}">Sản phẩm</a>
-    <a th:href="@{/about}">Giới thiệu</a>
-    <a th:href="@{/login}">Đăng nhập</a>
-    <a th:href="@{/users/registerPage}">Đăng Ký</a>
+    <a th:href="@{/login}">Login</a>
+    <a th:href="@{/users/registerPage}">Register Account</a>
 </nav>
 <main>
 <!-- Filter Section -->
 <div class="filter-section" style="max-width: 1400px; margin: 30px auto; padding: 0 40px;">
     <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 16px; padding: 25px 30px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.3);">
         <div style="margin-bottom: 20px;">
-            <h3 style="color: #2E8B57; font-size: 20px; margin: 0; font-weight: bold; text-align: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">🔍 Lọc theo danh mục</h3>
+            <h3 style="color: #2E8B57; font-size: 20px; margin: 0; font-weight: bold; text-align: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">🔍 Filter By Category</h3>
         </div>
         <div class="category-filter-container" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center;">
             <!-- Nút "Tất cả" -->
@@ -78,20 +75,18 @@
     <div class="product-card" th:each="product : ${products}">
         <img th:src="@{'/images/' + ${product.imagePath}}" alt="Hoa">
 
-        <h3 th:text="${product.productName}">Tên sản phẩm</h3>
+        <h3 th:text="${product.productName}"></h3>
 
-        <p th:text="${product.unitPrice + ' VNĐ'}">300,000 VNĐ</p>
+        <p th:text="${product.unitPrice + ' VNĐ'}"></p>
 
         <button onclick="showProductDetail(this)"
                 th:data-id="${product.id}"
                 th:data-name="${product.productName}"
                 th:data-price="${product.unitPrice}"
-                th:data-stock="${product.stockQuantity}"
                 th:data-description="${product.description}"
                 th:data-image="${product.imagePath}"
-                th:data-category="${product.category?.categoryName}"
-                th:data-supplier="${product.supplier?.supplierName}">
-            Xem chi tiết
+                th:data-category="${product.category?.categoryName}">
+            View Detail
         </button>
     </div>
 </section>
@@ -101,7 +96,7 @@
     <div class="modal-content">
         <span class="close">&times;</span>
         <div class="modal-header">
-            <h2 id="modalProductName">Tên sản phẩm</h2>
+            <h2 id="modalProductName">Product Name</h2>
         </div>
         <div class="modal-body">
             <div class="modal-image">
@@ -109,32 +104,25 @@
             </div>
             <div class="modal-info">
                 <div class="info-item">
-                    <strong>Giá:</strong> <span id="modalProductPrice">0 VNĐ</span>
+                    <strong>Price:</strong> <span id="modalProductPrice"></span>
                 </div>
                 <div class="info-item">
-                    <strong>Số lượng trong kho:</strong> <span id="modalProductStock">0</span>
-                </div>
-                <div class="info-item">
-                    <strong>Danh mục:</strong> <span id="modalProductCategory">N/A</span>
-                </div>
-                <div class="info-item">
-                    <strong>Nhà cung cấp:</strong> <span id="modalProductSupplier">N/A</span>
+                    <strong>Category:</strong> <span id="modalProductCategory">N/A</span>
                 </div>
                 <div class="info-item description">
-                    <strong>Mô tả:</strong>
-                    <p id="modalProductDescription">Không có mô tả</p>
+                    <strong>Description:</strong>
+                    <p id="modalProductDescription">No description</p>
                 </div>
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn-add-to-cart" onclick="addToCart()">Thêm vào giỏ hàng</button>
-            <button class="btn-close" onclick="closeModal()">Đóng</button>
+            <button class="btn-close" onclick="closeModal()">Close</button>
         </div>
     </div>
 </div>
 
 <footer>
-    <p>© 2025 Hoa Xanh Garden | Địa chỉ: 123 Hoa Hồng, TP.HCM | Điện thoại: 0909 123 456</p>
+    <p>© 2025 Hoa Xanh Garden | Address: 123 Hoa Hồng, TP.HCM | Phone Number: 0909 123 456</p>
 </footer>
 
 <script>
@@ -145,11 +133,9 @@
         const productId = button.getAttribute('data-id');
         const productName = button.getAttribute('data-name');
         const productPrice = button.getAttribute('data-price');
-        const productStock = button.getAttribute('data-stock');
         const productDescription = button.getAttribute('data-description');
         const productImage = button.getAttribute('data-image');
         const productCategory = button.getAttribute('data-category');
-        const productSupplier = button.getAttribute('data-supplier');
 
         // Lưu ID sản phẩm hiện tại
         currentProductId = productId;
@@ -157,10 +143,8 @@
         // Cập nhật nội dung modal
         document.getElementById('modalProductName').textContent = productName;
         document.getElementById('modalProductPrice').textContent = productPrice + ' VNĐ';
-        document.getElementById('modalProductStock').textContent = productStock;
         document.getElementById('modalProductCategory').textContent = productCategory || 'N/A';
-        document.getElementById('modalProductSupplier').textContent = productSupplier || 'N/A';
-        document.getElementById('modalProductDescription').textContent = productDescription || 'Không có mô tả';
+        document.getElementById('modalProductDescription').textContent = productDescription || 'No description';
         document.getElementById('modalProductImage').src = '/images/' + productImage;
 
         // Hiển thị modal
@@ -171,12 +155,6 @@
         document.getElementById('productModal').style.display = 'none';
     }
 
-    function addToCart() {
-        if (currentProductId) {
-            // Redirect tới trang thêm vào giỏ hàng
-            window.location.href = '/carts/add/' + currentProductId;
-        }
-    }
 
     // Đóng modal khi click vào nút X hoặc click ra ngoài modal
     document.addEventListener('DOMContentLoaded', function() {

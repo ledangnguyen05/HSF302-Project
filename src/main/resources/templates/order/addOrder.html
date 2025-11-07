@@ -94,9 +94,14 @@
         <h2 id="add-order-title">🧾 Add New Order</h2>
 
         <form id="add-order-form" th:action="@{/orders/addExecute}" th:object="${order}" method="post">
-            <div class="mb-3">
+
+            <div class="mb-3" th:if="${session.user.role.id!=3}">
                 <label class="form-label">Customer ID</label>
                 <input type="text" class="form-control" th:field="*{customer.id}" required>
+            </div>
+
+            <div class="mb-3" th:if="${session.user.role.id==3}">
+                <input type="hidden" class="form-control" th:field="*{customer.id}" th:value="${session.user.id}" readonly>
             </div>
 
             <div class="mb-3">
@@ -124,10 +129,10 @@
                             <option th:each="p : ${products}" th:value="${p.id}" th:text="${p.productName}" th:data-price="${p.unitPrice}"></option>
                         </select>
                     </td>
-                    <td><input type="text" class="unitPrice form-control" readonly th:field="*{orderDetails[__${stat.index}__].unitPrice}"></td>
-                    <td><input type="number" class="quantity form-control" th:field="*{orderDetails[__${stat.index}__].quantity}" min="1" value="1" required></td>
+                    <td><input type="text" readonly th:field="*{orderDetails[__${stat.index}__].unitPrice}"></td>
+                    <td><input type="number" th:field="*{orderDetails[__${stat.index}__].quantity}" min="1" value="1" required></td>
                     <td class="totalCell">0.00</td>
-                    <td><button type="button" class="btn btn-danger btn-sm removeDetail">X</button></td>
+                    <td><button type="button">X</button></td>
                 </tr>
                 </tbody>
             </table>
@@ -147,46 +152,136 @@
         <button class="btn">🔙 Back</button>
     </a>
 </div>
-
 <script>
     const detailsBody = document.getElementById("detailsBody");
+    const addBtn = document.getElementById("addDetail");
 
+    // Build options HTML from the first select options (rendered by Thymeleaf)
+    const firstSelect = detailsBody.querySelector("select.productSelect");
+    const optionsHTML = firstSelect ? firstSelect.innerHTML : "";
+
+    function formatNumber(v){
+        return Number(v).toFixed(2);
+    }
+
+    function recalcRow(row){
+        const price = parseFloat(row.querySelector(".unitPrice").value) || 0;
+        const qty = parseFloat(row.querySelector(".quantity").value) || 0;
+        row.querySelector(".totalCell").textContent = formatNumber(qty * price);
+    }
+
+    // delegation for product change
     detailsBody.addEventListener("change", e => {
         if(e.target.classList.contains("productSelect")){
             const row = e.target.closest("tr");
-            const price = parseFloat(e.target.selectedOptions[0].dataset.price) || 0;
-            row.querySelector(".unitPrice").value = price.toFixed(2);
-            const qty = parseFloat(row.querySelector(".quantity").value) || 0;
-            row.querySelector(".totalCell").textContent = (qty * price).toFixed(2);
+            const selected = e.target.selectedOptions[0];
+            const price = parseFloat(selected.dataset.price) || 0;
+            row.querySelector(".unitPrice").value = formatNumber(price);
+            recalcRow(row);
         }
     });
 
+    // delegation for qty input
     detailsBody.addEventListener("input", e => {
         if(e.target.classList.contains("quantity")){
-            const row = e.target.closest("tr");
-            const qty = parseFloat(e.target.value) || 0;
-            const price = parseFloat(row.querySelector(".unitPrice").value) || 0;
-            row.querySelector(".totalCell").textContent = (qty * price).toFixed(2);
+            recalcRow(e.target.closest("tr"));
         }
     });
 
-    document.getElementById("addDetail").addEventListener("click", () => {
-        const templateRow = detailsBody.querySelector("tr").cloneNode(true);
-        templateRow.querySelector(".productSelect").selectedIndex = 0;
-        templateRow.querySelector(".unitPrice").value = "0.00";
-        templateRow.querySelector(".quantity").value = 1;
-        templateRow.querySelector(".totalCell").textContent = "0.00";
-        detailsBody.appendChild(templateRow);
+    // Create a new row DOM (returns <tr>)
+    function createRow(index){
+        const tr = document.createElement("tr");
+
+        // Product cell
+        const tdProduct = document.createElement("td");
+        const sel = document.createElement("select");
+        sel.className = "form-select productSelect";
+        sel.required = true;
+        // name: orderDetails[index].product.id
+        sel.name = `orderDetails[${index}].product.id`;
+        sel.innerHTML = '<option value="" disabled selected>--Choose Product--</option>' + optionsHTML;
+        tdProduct.appendChild(sel);
+
+        // Unit price cell
+        const tdPrice = document.createElement("td");
+        const inpPrice = document.createElement("input");
+        inpPrice.type = "text";
+        inpPrice.className = "unitPrice form-control";
+        inpPrice.readOnly = true;
+        inpPrice.name = `orderDetails[${index}].unitPrice`;
+        inpPrice.value = "0.00";
+        tdPrice.appendChild(inpPrice);
+
+        // Quantity cell
+        const tdQty = document.createElement("td");
+        const inpQty = document.createElement("input");
+        inpQty.type = "number";
+        inpQty.min = "1";
+        inpQty.value = "1";
+        inpQty.required = true;
+        inpQty.className = "quantity form-control";
+        inpQty.name = `orderDetails[${index}].quantity`;
+        tdQty.appendChild(inpQty);
+
+        // Total cell (text)
+        const tdTotal = document.createElement("td");
+        tdTotal.className = "totalCell";
+        tdTotal.textContent = "0.00";
+
+        // Action cell
+        const tdAction = document.createElement("td");
+        const btnRemove = document.createElement("button");
+        btnRemove.type = "button";
+        btnRemove.className = "btn btn-danger btn-sm removeDetail";
+        btnRemove.textContent = "X";
+        tdAction.appendChild(btnRemove);
+
+        tr.appendChild(tdProduct);
+        tr.appendChild(tdPrice);
+        tr.appendChild(tdQty);
+        tr.appendChild(tdTotal);
+        tr.appendChild(tdAction);
+
+        return tr;
+    }
+
+    // Add initial rows indexes correct (fix names of existing rendered row(s))
+    function normalizeExistingRows(){
+        const rows = detailsBody.querySelectorAll("tr");
+        rows.forEach((r, idx) => {
+            const sel = r.querySelector(".productSelect");
+            if (sel) sel.name = `orderDetails[${idx}].product.id`;
+
+            const price = r.querySelector(".unitPrice");
+            if (price) price.name = `orderDetails[${idx}].unitPrice`;
+
+            const qty = r.querySelector(".quantity");
+            if (qty) qty.name = `orderDetails[${idx}].quantity`;
+        });
+    }
+
+    normalizeExistingRows(); // run once on load
+
+    addBtn.addEventListener("click", () => {
+        const newIndex = detailsBody.querySelectorAll("tr").length;
+        const newRow = createRow(newIndex);
+        detailsBody.appendChild(newRow);
     });
 
+    // remove handler
     detailsBody.addEventListener("click", e => {
-        if(e.target.classList.contains("removeDetail")){
-            if(detailsBody.rows.length > 1){
-                e.target.closest("tr").remove();
+        if (e.target.classList.contains("removeDetail")) {
+            const tr = e.target.closest("tr");
+            if (detailsBody.querySelectorAll("tr").length > 1) {
+                tr.remove();
+                // re-index names after removal
+                normalizeExistingRows();
             }
         }
     });
+
 </script>
+
 
 </body>
 </html>

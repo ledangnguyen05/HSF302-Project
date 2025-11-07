@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Hoa Xanh Garden</title>
-    <link rel="stylesheet" th:href="@{/admin_styles.css}">
+    <title>Profile - Hoa Xanh Garden</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
     <style>
-        body#register-page {
+        body#update-page {
             font-family: "Segoe UI", Arial, sans-serif;
             background: #f1f8f4;
             color: #2e7d32;
@@ -14,18 +14,17 @@
             padding: 0;
         }
 
-        .register-container {
+        .update-container {
             background: white;
             width: 90%;
             max-width: 600px;
-            margin: 60px auto;
-            padding: 30px 40px;
+            margin: 50px auto;
+            padding: 25px 40px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            animation: fadeIn 0.6s ease;
         }
 
-        #register-title {
+        #update-title {
             text-align: center;
             color: #1b5e20;
             margin-bottom: 25px;
@@ -44,7 +43,7 @@
         }
 
         .form-input, .form-select {
-            padding: 12px 14px;
+            padding: 10px 12px;
             border: 1px solid #a5d6a7;
             border-radius: 8px;
             font-size: 15px;
@@ -57,8 +56,13 @@
             box-shadow: 0 0 4px #a5d6a7;
         }
 
+        .readonly {
+            background: #f0f0f0;
+            cursor: not-allowed;
+        }
+
         .btn {
-            padding: 12px 20px;
+            padding: 10px 16px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
@@ -70,12 +74,10 @@
         .btn-primary {
             background-color: #43a047;
             color: white;
-            width: 100%;
         }
 
         .btn-primary:hover {
             background-color: #2e7d32;
-            transform: scale(1.02);
         }
 
         .btn-back {
@@ -85,7 +87,6 @@
 
         .btn-back:hover {
             background-color: #4caf50;
-            transform: scale(1.02);
         }
 
         .form-buttons, .back-buttons {
@@ -101,19 +102,15 @@
             margin-top: -6px;
         }
 
-        .global-error {
+        .notify {
             text-align: center;
             margin-top: 20px;
             font-weight: bold;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        /* Responsive */
         @media (max-width: 600px) {
-            .register-container {
+            .update-container {
                 padding: 20px;
             }
             .form-input, .form-select {
@@ -121,17 +118,30 @@
             }
             .btn {
                 font-size: 14px;
-                padding: 10px 14px;
+                padding: 9px 14px;
             }
         }
+        .role-section {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+        .role-input {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
     </style>
 </head>
-<body id="register-page">
+<body id="update-page">
 
-<div class="form-wrapper register-container">
-    <h2 id="register-title">Register Account</h2>
+<div class="form-wrapper update-container">
+    <h2 id="update-title">Your Profile</h2>
 
-    <form id="register-form" th:action="@{/users/registerExecute}" th:object="${user}" method="post" class="form-body">
+    <form id="update-form" th:action="@{/users/updateProfileExecute}"  th:object="${user}" method="post" class="form-body">
+
+        <label for="id" class="form-label">User ID:</label>
+        <input type="text" id="id" th:field="*{id}" class="form-input readonly" readonly>
 
         <label for="username" class="form-label">Username:</label>
         <input type="text" id="username" th:field="*{username}" class="form-input" placeholder="Enter username">
@@ -157,26 +167,49 @@
         <input type="text" id="address" th:field="*{address}" class="form-input" placeholder="Enter address">
         <div class="error" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
 
-        <div th:if="${session.user != null}">
+        <label for="status" class="form-label">Status:</label>
+        <select id="status" th:field="*{active}" class="form-select" required
+                th:disabled="${session.user.role.id != 1}">
+            <option th:value="true">Active</option>
+            <option th:value="false">Disabled</option>
+        </select>
+
+        <div th:if="${session.user.role.id == 1}" class="role-section">
             <label for="role" class="form-label">Role:</label>
-            <select id="role" th:field="*{role}" class="form-select" required>
-                <option value="" disabled selected>-- Select Role --</option>
+            <select id="role" th:field="*{role.id}" class="form-select role-input" required>
+                <option value="" disabled selected>-- Select role --</option>
                 <option th:each="role : ${roleList}" th:value="${role.id}" th:text="${role.roleName}"></option>
             </select>
+            <div class="error" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></div>
         </div>
 
-        <div class="error" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></div>
+        <input type="hidden" th:if="${session.user.role.id == 3}" th:field="*{role}"
+               th:value="${session.user.role.id}" />
+
+        <div th:if="${session.user.role.id == 2}">
+            <label class="form-label">Role :</label>
+            <input class="form-select role-input"
+                   type="text"
+                   th:value="*{role.roleName}"
+                   readonly />
+            <input type="hidden" th:field="*{role.id}" />
+        </div>
+
+
 
         <div class="form-buttons">
-            <button type="submit" id="btn-register" class="btn btn-primary">Register</button>
+            <button type="submit" id="btn-update" class="btn btn-primary">Update</button>
         </div>
     </form>
 
     <div class="back-buttons">
-        <button onclick="history.back()" class="btn btn-back">🔙 Back</button>
+        <a th:href="@{/home}">
+            <button  class="btn btn-back">🔙 Back</button>
+        </a>
     </div>
 
-    <p class="error global-error" th:if="${error}" th:text="${error}"></p>
+    <p class="notify" th:if="${error}" th:text="${error}"></p>
+    <p class="notify" th:if="${message}" th:text="${message}"></p>
 </div>
 
 </body>
