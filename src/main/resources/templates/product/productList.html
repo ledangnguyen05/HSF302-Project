@@ -118,8 +118,8 @@
     <h1>🌸 Product Management</h1>
     
     <div class="header-actions">
-        <a th:href="@{/products/add}"><button>➕ Add New Product</button></a>
-        <a th:href="@{/home}"><button class="back-button">🔙 Back To Home</button></a>
+        <a th:href="@{/products/add}" th:if="${session.user.role.id==1}"><button>➕ Add New Product</button></a>
+        <a th:href="@{/home}"><button class="back-button"> Back To Home</button></a>
     </div>
 
     
@@ -151,7 +151,7 @@
                 <th>Description</th>
                 <th>Category</th>
                 <th>Supplier</th>
-                <th>Action</th>
+                <th th:if="${session.user.role.id==1}">Action</th>
             </tr>
         </thead>
         <tbody>
@@ -163,7 +163,7 @@
                 <td th:text="${product.description ?: '-'}"></td>
                 <td th:text="${product.category?.categoryName ?: '-'}"></td>
                 <td th:text="${product.supplier?.supplierName ?: '-'}"></td>
-                <td>
+                <td th:if="${session.user.role.id==1}">
                     <div class="action-buttons">
                         <a th:href="@{/products/delete/{id}(id=${product.id})}" onclick="return confirm('Are you sure to delete?')">
                             <button class="delete-btn">Delete</button>

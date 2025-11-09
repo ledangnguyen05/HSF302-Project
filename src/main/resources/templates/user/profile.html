@@ -144,8 +144,7 @@
         <input type="text" id="id" th:field="*{id}" class="form-input readonly" readonly>
 
         <label for="username" class="form-label">Username:</label>
-        <input type="text" id="username" th:field="*{username}" class="form-input" placeholder="Enter username">
-        <div class="error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+        <input type="text" id="username" th:field="*{username}" class="form-input" readonly>
 
         <label for="password" class="form-label">Password:</label>
         <input type="text" id="password" th:field="*{password}" class="form-input" placeholder="Enter password">
@@ -204,7 +203,7 @@
 
     <div class="back-buttons">
         <a th:href="@{/home}">
-            <button  class="btn btn-back">🔙 Back</button>
+            <button  class="btn btn-back"> Back</button>
         </a>
     </div>
 

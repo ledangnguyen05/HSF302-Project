@@ -26,13 +26,13 @@
     <section>
         <h2>🌸 Work Overview</h2>
         <div style="display: flex; gap: 20px; margin-top: 20px;">
-            <div class="card" style="flex: 1; text-align: center;">
+            <div class="card" style="flex: 1; text-align: center;" >
                 <h3>Pending Orders</h3>
-                <p th:text="${pendingOrders}">8</p>
+                <p th:text="${countPending}"></p>
             </div>
             <div class="card" style="flex: 1; text-align: center;">
                 <h3>Orders Completed Today</h3>
-                <p th:text="${completedToday}">12</p>
+                <p th:text="${countFinished}"></p>
             </div>
         </div>
 
@@ -42,22 +42,27 @@
             <tr>
                 <th>Order ID</th>
                 <th>Customer</th>
+                <th>Phone</th>
                 <th>Order Date</th>
-                <th>Total</th>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>Quantity</th>
                 <th>Status</th>
-                <th>Action</th>
             </tr>
             </thead>
-            <tbody th:each="order : ${orders}">
+            <tbody th:each="order : ${orders}"
+                   th:if="${order.status != T(hsf302.hsf302project.entity.OrderEntity.Status).CANCELLED
+                   and order.status != T(hsf302.hsf302project.entity.OrderEntity.Status).FINISHED}">
             <tr>
-                <td th:text="${order.id}">#2025</td>
-                <td th:text="${order.customerName}">Le Ngoc Anh</td>
-                <td th:text="${order.date}">2025-10-24</td>
-                <td th:text="${order.total}">420,000 VND</td>
-                <td th:text="${order.status}">Pending</td>
-                <td>
-                    <button th:onclick="'window.location.href=\'/staff/orders/' + ${order.id} + '\';'">Update</button>
-                </td>
+                <td th:text="${order.orderID}"></td>
+                <td th:text="${order.customer.fullName}"></td>
+                <td th:text="${order.customer.phone}"></td>
+                <td th:text="${#temporals.format(order.orderDate,'dd/MM/yyyy HH:mm')}"></td>
+                <td th:text="${order.orderDetails[0].product.productName}"></td>
+                <td th:text="${order.orderDetails[0].product.category.categoryName}"></td>
+                <td th:text="${order.orderDetails[0].quantity}"></td>
+                <td th:text="${order.status}"></td>
+
             </tr>
             </tbody>
         </table>

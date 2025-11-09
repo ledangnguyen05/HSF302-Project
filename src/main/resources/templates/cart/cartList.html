@@ -171,7 +171,7 @@
                 <input type="hidden" name="orderDetails[0].product.id" th:value="${cart.product.id}">
                 <input type="hidden" name="orderDetails[0].quantity" th:value="${cart.quantity}">
                 <input type="hidden" name="customer.id" th:value="${session.user.id}">
-                <a href="#" class="action-link" onclick="if(confirm('Confirm order?')) this.closest('form').submit(); return false;">Order |</a>
+                <a href="#" class="action-link" onclick="if(confirm('Confirm order?')) this.closest('form').submit(); return false;">Order   |</a>
             </form>
             <a th:href="@{'/carts/deleteCart/' + ${cart.id}}" class="action-link"
                onclick="return confirm('Delete this cart?')">Delete</a>
@@ -182,7 +182,7 @@
 
 <div id="back-container">
     <a th:href="@{/home}">
-        <button id="btn-back">🔙 Back To Home</button>
+        <button id="btn-back"> Back To Home</button>
     </a>
 </div>
 

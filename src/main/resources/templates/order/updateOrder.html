@@ -4,80 +4,128 @@
     <meta charset="UTF-8">
     <title>Update Order - Hoa Xanh Garden</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body#update-order-page {
-            font-family: Arial, sans-serif;
-            background-color: #f0fff0; /* pale green background */
-            color: #006400; /* dark green text */
-            margin: 20px;
+            font-family: "Segoe UI", sans-serif;
+            background-color: #f6fff8;
+            color: #064420;
+            margin: 0;
+            padding: 40px 0;
         }
 
         .update-container {
-            max-width: 800px;
+            max-width: 850px;
             margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #228B22;
-            border-radius: 10px;
-            background-color: #ffffff;
-            box-shadow: 0 0 10px rgba(0, 100, 0, 0.2);
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 30px 40px;
+            box-shadow: 0 4px 18px rgba(0, 100, 0, 0.1);
+            border-top: 6px solid #009879;
         }
 
         h2#update-order-title {
             text-align: center;
-            color: #228B22;
-            margin-bottom: 20px;
+            color: #009879;
+            font-size: 26px;
+            margin-bottom: 25px;
         }
 
         form#update-order-form {
             display: flex;
             flex-direction: column;
+            gap: 15px;
         }
 
         label.form-label {
-            margin-top: 10px;
-            color: #006400;
-            font-weight: bold;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #064420;
         }
 
         input.form-input,
         select.form-input,
         textarea.form-input {
-            padding: 8px;
-            border: 1px solid #228B22;
-            border-radius: 5px;
-            margin-top: 5px;
+            padding: 10px 12px;
+            border: 1px solid #b4d6c1;
+            border-radius: 8px;
             width: 100%;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            background-color: #f9fffc;
+        }
+
+        input.form-input:focus,
+        select.form-input:focus,
+        textarea.form-input:focus {
+            border-color: #009879;
+            outline: none;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(0, 152, 121, 0.15);
         }
 
         .detail-box {
-            border: 1px solid #228B22;
-            border-radius: 8px;
-            padding: 10px;
-            margin-top: 10px;
+            border: 1px solid #d0ebda;
+            border-radius: 10px;
+            padding: 15px;
             background-color: #f8fff8;
+            margin-top: 10px;
+            box-shadow: 0 1px 4px rgba(0, 100, 0, 0.05);
         }
 
-        button.btn {
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #228B22;
+        .detail-box label {
+            color: #0b5137;
+        }
+
+        .btn {
+            background-color: #009879;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.25s ease;
+            margin-top: 10px;
         }
 
-        button.btn:hover {
-            background-color: #006400;
+        .btn:hover {
+            background-color: #0bb77b;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0, 152, 121, 0.3);
         }
 
         .back-container {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 25px;
+        }
+
+        .back-link button {
+            background-color: #f0f8f3;
+            color: #009879;
+            border: 1px solid #009879;
+        }
+
+        .back-link button:hover {
+            background-color: #009879;
+            color: white;
         }
 
         .error-message {
-            color: red;
-            margin-top: 5px;
+            color: #e53935;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .update-container {
+                padding: 25px;
+            }
         }
     </style>
 </head>
@@ -131,7 +179,7 @@
 
     <div class="back-container">
         <a th:href="@{/orders/listOrders}" class="back-link">
-            <button type="button" class="btn">🔙 Back To Order List</button>
+            <button type="button" class="btn"> Back To Order List</button>
         </a>
     </div>
 
