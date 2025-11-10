@@ -33,6 +33,7 @@ public class UserController {
     @GetMapping("/listUsers")
     public String listUsers(Model model) {
         model.addAttribute("users", userService.findAllUsers());
+        model.addAttribute("roleList",roleRepository.findAll());
         return "user/userList";
     }
 
@@ -142,12 +143,11 @@ public class UserController {
         boolean success = userService.updateUser(userEntity.getId(), userEntity);
         if (!success) {
             model.addAttribute("error", "Update failed due to server error");
-            model.addAttribute("roleList", roleRepository.findAll());
-            return "user/updateUser";
         } else {
-            redirectAttributes.addFlashAttribute("message", "Update successful");
-            return "redirect:/users/listUsers";
+            model.addAttribute("message", "Update successful");
         }
+        model.addAttribute("roleList", roleRepository.findAll());
+        return "user/updateUser";
     }
 
     @GetMapping("/deleteUser/{id}")
@@ -164,27 +164,33 @@ public class UserController {
 
     @PostMapping("/search")
     public String search(@RequestParam("searchType") String searchType,
-                         @RequestParam("keyword") String keyword,
+                         @RequestParam(required = false) String keywordText,
+                         @RequestParam(required = false) String keywordRole,
                          Model model) {
 
         List<UserEntity> users = new ArrayList<>();
+        String keyword = "";
 
         switch (searchType) {
             case "byUserName":
-                users = userService.findByUsername(keyword);
+                keyword = keywordText.trim();
+                users = userService.findByUsername(keywordText);
                 break;
 
             case "byMail":
-                users = userService.findByEmail(keyword);
+                keyword = keywordText.trim();
+                users = userService.findByEmail(keywordText);
                 break;
 
             case "byPhone":
-                UserEntity phoneUser = userService.findByPhone(keyword);
+                keyword = keywordText.trim();
+                UserEntity phoneUser = userService.findByPhone(keywordText);
                 if (phoneUser != null) users.add(phoneUser);
                 break;
 
             case "byRoleName":
-                users=userRepository.findByRole_RoleNameIgnoreCase(keyword);
+                keyword = keywordRole;
+                users = userRepository.findByRole_RoleNameIgnoreCase(keywordRole);
                 break;
         }
 
@@ -193,9 +199,14 @@ public class UserController {
         } else {
             model.addAttribute("users", users);
         }
-        model.addAttribute("searchType",searchType);
+
+        model.addAttribute("searchType", searchType);
+        model.addAttribute("roleList", roleRepository.findAll());
+        model.addAttribute("keywordText", keywordText);
+        model.addAttribute("keywordRole", keywordRole);
         return "user/userList";
     }
+
 
     @PostMapping("/previousAction")
     public String someAction(HttpServletRequest request) {
@@ -203,4 +214,57 @@ public class UserController {
         return "redirect:" + referer;
     }
 
+    @GetMapping("/profile/{id}")
+    public String profile(@PathVariable int id ,Model model) {
+        UserEntity user = userService.findByUserId(id);
+        model.addAttribute("roleList", roleRepository.findAll());
+        model.addAttribute("user", user);
+        return "user/profile";
+    }
+
+    @PostMapping("/updateProfileExecute")
+    public String updateProfileExecute(@Valid @ModelAttribute("user") UserEntity userEntity,
+                                BindingResult result,
+                                Model model) {
+
+        if (result.hasErrors()) {
+            model.addAttribute("roleList", roleRepository.findAll());
+            return "user/updateUser";
+        }
+
+        userRepository.findByUsernameIgnoreCase(userEntity.getUsername())
+                .filter(u -> u.getId() != userEntity.getId())
+                .ifPresent(u -> {
+                    model.addAttribute("error", "Username is already taken");
+                    model.addAttribute("roleList", roleRepository.findAll());
+                });
+        if (model.containsAttribute("error")) return "user/profile";
+
+        userRepository.findByEmailIgnoreCase(userEntity.getEmail())
+                .filter(u -> u.getId() != userEntity.getId())
+                .ifPresent(u -> {
+                    model.addAttribute("error", "Email is already taken");
+                    model.addAttribute("roleList", roleRepository.findAll());
+                });
+        if (model.containsAttribute("error")) return "user/profile";
+
+        if (userEntity.getPhone() != null && !userEntity.getPhone().isBlank()) {
+            userRepository.findByPhone(userEntity.getPhone())
+                    .filter(u -> u.getId() != userEntity.getId())
+                    .ifPresent(u -> {
+                        model.addAttribute("error", "Phone is already taken");
+                        model.addAttribute("roleList", roleRepository.findAll());
+                    });
+            if (model.containsAttribute("error")) return "user/profile";
+        }
+
+        boolean success = userService.updateUser(userEntity.getId(), userEntity);
+        if (!success) {
+            model.addAttribute("error", "Update failed due to server error");
+        } else {
+            model.addAttribute("message", "Update successful");
+        }
+        model.addAttribute("roleList", roleRepository.findAll());
+        return "user/profile";
+    }
 }

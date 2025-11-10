@@ -15,7 +15,7 @@
                 <a th:href="@{/revenue/daily}"><button class="revenue-button">📅 Daily Report</button></a>
                 <a th:href="@{/revenue/monthly}"><button class="revenue-button">📈 Monthly Report</button></a>
             </div>
-            <a th:href="@{/home}"><button class="revenue-button revenue-back-button">🔙 Back To Home</button></a>
+            <a th:href="@{/home}"><button class="revenue-button revenue-back-button"> Back To Home</button></a>
         </div>
 
         <div class="revenueDashboard-stats-grid">
@@ -30,10 +30,6 @@
             <div class="revenueDashboard-stat-card">
                 <h3>Total Orders</h3>
                 <p class="value" th:text="${totalOrders}"></p>
-            </div>
-            <div class="revenueDashboard-stat-card">
-                <h3>Pending Orders</h3>
-                <p class="value" th:text="${pendingOrders}"></p>
             </div>
         </div>
     </div>

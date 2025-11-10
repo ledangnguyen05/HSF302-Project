@@ -61,23 +61,29 @@ public class SupplierController {
 
     @GetMapping("/updatePage/{id}")
     public String updatePage(@PathVariable int id, Model model){
-        model.addAttribute("supplier", supplierRepository.findById(id));
+        SupplierEntity supplier = supplierRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid supplier ID: " + id));
+        model.addAttribute("supplier", supplier);
         return "supplier/updateSupplier";
     }
 
+
     @PostMapping("/updateExecute")
     public String updateExecute(@Valid @ModelAttribute("supplier") SupplierEntity supplierEntity,
+                                BindingResult result,
                                 Model model,
-                                RedirectAttributes redirectAttributes,
-                                BindingResult result){
+                                RedirectAttributes redirectAttributes){
         if(result.hasErrors()){
             model.addAttribute("supplier",supplierEntity);
             return "supplier/updateSupplier";
         }
-        if(supplierRepository.findBySupplierNameIgnoreCase(supplierEntity.getSupplierName()).isPresent()){
-            model.addAttribute("error","Supplier name is already token");
-            return "supplier/updateSupplier";
-        }
+        supplierRepository.findBySupplierNameIgnoreCase(supplierEntity.getSupplierName())
+                .ifPresent(existing -> {
+                    if (existing.getId() != supplierEntity.getId()) {
+                        model.addAttribute("error", "Supplier name is already taken");
+                        throw new IllegalArgumentException();
+                    }
+                });
         boolean isUpdated=supplierService.update(supplierEntity.getId(),supplierEntity);
         if(isUpdated){
             redirectAttributes.addFlashAttribute("message","Supplier updated successfully");
@@ -106,17 +112,17 @@ public class SupplierController {
         List<SupplierEntity>suppliers=new ArrayList<>();
         switch (searchType){
             case "bySupplierName":
-                suppliers=supplierRepository.findBySupplierNameContainingIgnoreCase(keyword);
+                suppliers=supplierRepository.findBySupplierNameContainingIgnoreCase(keyword.trim());
                 break;
             case "byContactName":
-                suppliers=supplierRepository.findByContactNameContainingIgnoreCase(keyword);
+                suppliers=supplierRepository.findByContactNameContainingIgnoreCase(keyword.trim());
                 break;
             case "byPhone":
-                suppliers=supplierRepository.findByPhone(keyword);
+                suppliers=supplierRepository.findByPhone(keyword.trim());
                 break;
         }
         if(suppliers.isEmpty()){
-            model.addAttribute("error","Supplier not found for "+keyword);
+            model.addAttribute("error","Supplier not found for "+keyword.trim());
         }else{
             model.addAttribute("suppliers",suppliers);
         }

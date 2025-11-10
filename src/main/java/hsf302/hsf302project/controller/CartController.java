@@ -1,6 +1,7 @@
 package hsf302.hsf302project.controller;
 
 import hsf302.hsf302project.entity.CartEntity;
+import hsf302.hsf302project.entity.UserEntity;
 import hsf302.hsf302project.repository.CartRepository;
 import hsf302.hsf302project.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,4 +45,17 @@ public class CartController {
         }
         return "redirect:/carts/listCarts";
     }
+    @GetMapping("/add/{productId}")
+    public String addToCart(@PathVariable int productId,
+                            @SessionAttribute("user") UserEntity user,
+                            RedirectAttributes redirectAttributes) {
+        try {
+            cartService.addProductToCart(user.getId(), productId);
+            redirectAttributes.addFlashAttribute("message", "Product added to cart successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to add product to cart!");
+        }
+        return "redirect:/carts/listCarts";
+    }
+
 }
