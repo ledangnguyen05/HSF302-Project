@@ -82,34 +82,34 @@ public class DataInitializer implements CommandLineRunner {
                         .build())
         );
 
-        // Ensure a default Flowers category exists
-        CategoryEntity flowersCategory = categoryRepository.findByCategoryNameIgnoreCase("Flowers")
+        // Ensure categories exist: Rose, Sunflower, Hibiscus, Chrysanthemum, Tulip
+        CategoryEntity roseCategory = categoryRepository.findByCategoryNameIgnoreCase("Rose")
                 .orElseGet(() -> categoryRepository.save(CategoryEntity.builder()
-                        .categoryName("Flowers")
-                        .description("All kinds of fresh flowers")
-                        .build()));
-
-        CategoryEntity giftsCategory = categoryRepository.findByCategoryNameIgnoreCase("Gifts")
-                .orElseGet(() -> categoryRepository.save(CategoryEntity.builder()
-                        .categoryName("Gifts")
-                        .description("Gift baskets and add-ons for flowers")
-                        .build()));
-
-        CategoryEntity orchidsCategory = categoryRepository.findByCategoryNameIgnoreCase("Orchids")
-                .orElseGet(() -> categoryRepository.save(CategoryEntity.builder()
-                        .categoryName("Orchids")
-                        .description("Potted and cut orchids")
-                        .build()));
-
-        CategoryEntity rosesCategory = categoryRepository.findByCategoryNameIgnoreCase("Roses")
-                .orElseGet(() -> categoryRepository.save(CategoryEntity.builder()
-                        .categoryName("Roses")
+                        .categoryName("Rose")
                         .description("Varieties of roses in different colors")
                         .build()));
 
-        CategoryEntity tulipsCategory = categoryRepository.findByCategoryNameIgnoreCase("Tulips")
+        CategoryEntity sunflowerCategory = categoryRepository.findByCategoryNameIgnoreCase("Sunflower")
                 .orElseGet(() -> categoryRepository.save(CategoryEntity.builder()
-                        .categoryName("Tulips")
+                        .categoryName("Sunflower")
+                        .description("Bright and cheerful sunflowers")
+                        .build()));
+
+        CategoryEntity hibiscusCategory = categoryRepository.findByCategoryNameIgnoreCase("Hibiscus")
+                .orElseGet(() -> categoryRepository.save(CategoryEntity.builder()
+                        .categoryName("Hibiscus")
+                        .description("Tropical hibiscus flowers")
+                        .build()));
+
+        CategoryEntity chrysanthemumCategory = categoryRepository.findByCategoryNameIgnoreCase("Chrysanthemum")
+                .orElseGet(() -> categoryRepository.save(CategoryEntity.builder()
+                        .categoryName("Chrysanthemum")
+                        .description("Beautiful chrysanthemum flowers")
+                        .build()));
+
+        CategoryEntity tulipCategory = categoryRepository.findByCategoryNameIgnoreCase("Tulip")
+                .orElseGet(() -> categoryRepository.save(CategoryEntity.builder()
+                        .categoryName("Tulip")
                         .description("Seasonal tulips bundles and bouquets")
                         .build()));
 
@@ -149,21 +149,66 @@ public class DataInitializer implements CommandLineRunner {
 
 
 
-        // Seed sample flower products per category & supplier (skip if already present by exact name)
-        createProductIfAbsent("Red Rose Bouquet", new BigDecimal("19.99"), 50,
-                "Bouquet of 12 premium red roses","Red_Rose_Bouquet.jpg", rosesCategory, gardenHouse);
+        // Seed 5 sample flower products per category (25 products total)
+        // Rose category products
+        createProductIfAbsent("Red Rose Bouquet", new BigDecimal("180000"), 50,
+                "Bouquet of 12 premium red roses","Red_Rose_Bouquet.jpg", roseCategory, gardenHouse);
+        createProductIfAbsent("Pink Rose Bouquet", new BigDecimal("180000"), 50,
+                "Bouquet of 12 delicate pink roses","Pink_Rose_Bouquet.jpg", roseCategory, gardenHouse);
+        createProductIfAbsent("White Rose Bouquet", new BigDecimal("180000"), 50,
+                "Bouquet of 12 elegant white roses","White_Rose_Bouquet.jpg", roseCategory, gardenHouse);
+        createProductIfAbsent("Yellow Rose Bouquet", new BigDecimal("180000"), 50,
+                "Bouquet of 12 bright yellow roses","Yellow_Rose_Bouquet.jpg", roseCategory, gardenHouse);
+        createProductIfAbsent("Mixed Rose Bouquet", new BigDecimal("220000"), 40,
+                "Bouquet of 12 mixed color roses","Mixed_Rose_Bouquet.jpg", roseCategory, gardenHouse);
 
-        createProductIfAbsent("White Lily Bouquet", new BigDecimal("24.99"), 40,
-                "Elegant white lilies, perfect for celebrations","White_Lily_Bouquet.jpg", flowersCategory, sunnyFarms);
+        // Sunflower category products
+        createProductIfAbsent("Giant Sunflower", new BigDecimal("120000"), 60,
+                "Large giant sunflower with tall stem","Giant_Sunflower.jpg", sunflowerCategory, sunnyFarms);
+        createProductIfAbsent("Dwarf Sunflower", new BigDecimal("100000"), 70,
+                "Compact dwarf sunflower perfect for decoration","Dwarf_Sunflower.jpg", sunflowerCategory, sunnyFarms);
+        createProductIfAbsent("Red Sunflower", new BigDecimal("130000"), 50,
+                "Unique red sunflower with vibrant color","Red_Sunflower.jpg", sunflowerCategory, sunnyFarms);
+        createProductIfAbsent("Lemon Queen Sunflower", new BigDecimal("115000"), 55,
+                "Beautiful lemon-colored sunflower","Lemon_Queen_Sunflower.jpg", sunflowerCategory, sunnyFarms);
+        createProductIfAbsent("Teddy Bear Sunflower", new BigDecimal("120000"), 50,
+                "Fluffy double-petaled sunflower","Teddy_Bear_Sunflower.jpg", sunflowerCategory, sunnyFarms);
 
-        createProductIfAbsent("Pink Tulip Bundle", new BigDecimal("14.99"), 60,
-                "Bundle of 10 fresh pink tulips","Pink_Tulip_Bundle.jpeg", tulipsCategory, sunnyFarms);
+        // Hibiscus category products
+        createProductIfAbsent("Red Hibiscus", new BigDecimal("140000"), 45,
+                "Vibrant red hibiscus flower","Red_Hibiscus.jpg", hibiscusCategory, orchidWorld);
+        createProductIfAbsent("Pink Hibiscus", new BigDecimal("140000"), 45,
+                "Beautiful pink hibiscus flower","Pink_Hibiscus.jpg", hibiscusCategory, orchidWorld);
+        createProductIfAbsent("Yellow Hibiscus", new BigDecimal("140000"), 45,
+                "Bright yellow hibiscus flower","Yellow_Hibiscus.jpg", hibiscusCategory, orchidWorld);
+        createProductIfAbsent("White Hibiscus", new BigDecimal("150000"), 40,
+                "Elegant white hibiscus flower","White_Hibiscus.jpg", hibiscusCategory, orchidWorld);
+        createProductIfAbsent("Tropical Hibiscus Mix", new BigDecimal("170000"), 35,
+                "Mixed tropical hibiscus bouquet","Tropical_Hibiscus_Mix.jpg", hibiscusCategory, orchidWorld);
 
-        createProductIfAbsent("Purple Orchid Pot", new BigDecimal("29.99"), 30,
-                "Potted purple orchid with long-lasting blooms","Purple_Orchid_Pot.webp", orchidsCategory, orchidWorld);
+        // Chrysanthemum category products
+        createProductIfAbsent("White Chrysanthemum", new BigDecimal("130000"), 55,
+                "Pure white chrysanthemum bouquet","White_Chrysanthemum.jpg", chrysanthemumCategory, defaultSupplier);
+        createProductIfAbsent("Yellow Chrysanthemum", new BigDecimal("130000"), 55,
+                "Golden yellow chrysanthemum bouquet","Yellow_Chrysanthemum.jpg", chrysanthemumCategory, defaultSupplier);
+        createProductIfAbsent("Purple Chrysanthemum", new BigDecimal("135000"), 50,
+                "Rich purple chrysanthemum bouquet","Purple_Chrysanthemum.jpg", chrysanthemumCategory, defaultSupplier);
+        createProductIfAbsent("Pink Chrysanthemum", new BigDecimal("130000"), 55,
+                "Soft pink chrysanthemum bouquet","Pink_Chrysanthemum.jpg", chrysanthemumCategory, defaultSupplier);
+        createProductIfAbsent("Mixed Chrysanthemum", new BigDecimal("150000"), 45,
+                "Colorful mixed chrysanthemum bouquet","Mixed_Chrysanthemum.jpg", chrysanthemumCategory, defaultSupplier);
 
-        createProductIfAbsent("Sunflower Bunch", new BigDecimal("11.99"), 70,
-                "Bright sunflowers to light up any room","Sunflower_Bunch.jpg", flowersCategory, defaultSupplier);
+        // Tulip category products
+        createProductIfAbsent("Red Tulip Bundle", new BigDecimal("110000"), 65,
+                "Bundle of 10 classic red tulips","Red_Tulip_Bundle.jpg", tulipCategory, sunnyFarms);
+        createProductIfAbsent("Yellow Tulip Bundle", new BigDecimal("110000"), 65,
+                "Bundle of 10 bright yellow tulips","Yellow_Tulip_Bundle.jpg", tulipCategory, sunnyFarms);
+        createProductIfAbsent("Pink Tulip Bundle", new BigDecimal("110000"), 65,
+                "Bundle of 10 delicate pink tulips","Pink_Tulip_Bundle.jpg", tulipCategory, sunnyFarms);
+        createProductIfAbsent("Purple Tulip Bundle", new BigDecimal("120000"), 60,
+                "Bundle of 10 elegant purple tulips","Purple_Tulip_Bundle.jpg", tulipCategory, sunnyFarms);
+        createProductIfAbsent("Rainbow Tulip Mix", new BigDecimal("150000"), 50,
+                "Colorful rainbow tulip bouquet","Rainbow_Tulip_Mix.jpg", tulipCategory, sunnyFarms);
     }
 
     private void createProductIfAbsent(String name, BigDecimal price, int stock,
